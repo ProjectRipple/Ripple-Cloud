@@ -33,6 +33,7 @@ public class Subscriber {
 			}
 			if (isPubListenerRegistered) {
 				mPubListListener.publisherListUpdate(new PublisherList(mPubList));
+				// test to commit 
 			}
 		}
 		
