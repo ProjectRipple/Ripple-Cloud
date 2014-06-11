@@ -12,6 +12,7 @@ public class PublisherRecord implements Serializable {
 	private String[] topics;
 
 	public String[] getTopics() {
+		System.out.println();
 		return topics;
 	}
 
