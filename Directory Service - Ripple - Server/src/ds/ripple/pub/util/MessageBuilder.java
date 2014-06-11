@@ -32,7 +32,7 @@ public class MessageBuilder {
 		ObjectOutputStream o = new ObjectOutputStream(b);
 	    o.writeObject(obj);
 		o.close();
-		o.close();
+	//	o.close();
 		return b.toByteArray();
 	}
 	

@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import ds.ripple.common.PublisherRecord;
 import ds.ripple.pub.util.MessageBuilder;
@@ -21,9 +22,10 @@ public class Directory {
 
 	protected static final int ERROR_URL_ALREADY_EXISTS = -1;
 	protected static final int ERROR_PUBLISHER_PARSING_ERROR = -2;
-	protected static final int ERROR_PUBLISHER_URL_NOT_FOUND = -3;
+	protected static final int ERROR_PUBLISHER_URL_NOT_FOUND = -4;
+	protected static final int  ERROR_PUBLISHER_NOT_UPDATED = -3;
+	protected static final int ERROR_PUBLISHER_NOT_IN_DS = -5;
 	protected static final String DEREGISTRATION_OK = "Ok";
-	
 
 	private Random rnd = new Random();
 
@@ -43,6 +45,8 @@ public class Directory {
 			tmpPubRecord = (PublisherRecord) is.readObject();
 			if (pubURLs.containsValue(tmpPubRecord.getPub_address())) {
 				return ERROR_URL_ALREADY_EXISTS;
+			}else if(this.checkAddress(tmpPubRecord.getPub_address())){
+				
 			}
 			// LOGGER.info("data recieved for registration is not in format");
 			return 0;
@@ -53,6 +57,18 @@ public class Directory {
 		}
 	}
 
+	public Integer genUid() {
+		int uid;
+		boolean nxt = false;
+		do {
+			uid = rnd.nextInt(1000000);
+			if (pubURLs.containsKey(uid)) {
+				nxt = true;
+			}
+		} while (nxt);
+		return uid;
+	}
+
 	/**
 	 * To register a publisher into the directory
 	 * 
@@ -60,8 +76,9 @@ public class Directory {
 	 * @return
 	 */
 	public Integer pubisherRegistration(byte[] pub) {
+
 		if (this.pubCheck(pub) == 0) {
-			tmpPubRecord.setPub_Id(rnd.nextInt(100000));
+			tmpPubRecord.setPub_Id(this.genUid());
 			pubList.put(tmpPubRecord.getPub_Id(), tmpPubRecord);
 			pubURLs.put(tmpPubRecord.getPub_Id(), tmpPubRecord.getPub_address());
 			return tmpPubRecord.getPub_Id();
@@ -77,34 +94,90 @@ public class Directory {
 	 * @return
 	 */
 	public String publisherDeregistration(byte[] ID) {
-		if (pubList.containsKey(ID)) {
-			pubList.remove(ID);
-			pubURLs.remove(ID);
-			return DEREGISTRATION_OK;
-		} else {
+		try {
+			int pubId = Integer.parseInt((String)MessageBuilder.deserialize(ID));
+			if (pubList.containsKey(ID)) {
+				pubList.remove(ID);
+				pubURLs.remove(ID);
+				return DEREGISTRATION_OK;
+			} else {
+				return Integer.toString(ERROR_PUBLISHER_URL_NOT_FOUND);
+			}
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return Integer.toString(ERROR_PUBLISHER_URL_NOT_FOUND);
-		}
+		} 
+		
 	}
 
 	/**
-	 * @return
+	 * Check if the specified address is a valid numeric TCP/IP address
+	 * 
+	 * @param pubAddr
+	 *   
+	 * @return boolean
+	 */
+	public boolean checkAddress(String pubAddr) {
+
+		// Check if the string is valid
+		
+		if (pubAddr == null || pubAddr.length() < 7 || pubAddr.length() > 15)
+			return false;
+
+		// Check the address string, should be n.n.n.n format
+		
+		StringTokenizer token = new StringTokenizer(pubAddr, ".");
+		if (token.countTokens() != 4)
+			return false;
+
+		while (token.hasMoreTokens()) {
+			
+			// check for values in address are valid
+			try {
+				int val = Integer.valueOf(token.nextToken()).intValue();
+				if (val < 0 || val > 255)
+					return false;
+			} catch (NumberFormatException ex) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @return HashMap<Integer, PublisherRecord>
 	 */
 	public HashMap<Integer, PublisherRecord> getDirectoryList() {
 		return pubList;
 	}
-	
+
+	/**
+	 * @return String
+	 */
 	public String updatePublisherInfo(byte[] msg) {
 		try {
-			PublisherRecord pubRecord = (PublisherRecord)MessageBuilder.deserialize(msg);
+			PublisherRecord pubRecord = (PublisherRecord) MessageBuilder
+					.deserialize(msg);
 			pubList.put(pubRecord.getPub_Id(), pubRecord);
 			pubURLs.put(pubRecord.getPub_Id(), pubRecord.getPub_address());
-			return "0";
+			return "OK";
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
-			return "-1";
-		} catch (Exception e) {
+			return Integer.toString(ERROR_PUBLISHER_NOT_UPDATED);
+		} 
+	}
+	
+	public int pubAlive(byte[] msg){
+		try {
+			int pubId = (int) MessageBuilder.deserialize(msg);
+			if(pubURLs.containsKey(pubId)){
+				return pubId;
+			}
+			return ERROR_PUBLISHER_NOT_IN_DS;
+		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
-			return "-1";
-		}
+			return ERROR_PUBLISHER_NOT_IN_DS;
+		} 
 	}
 }
