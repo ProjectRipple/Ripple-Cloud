@@ -96,9 +96,9 @@ public class Directory {
 	public String publisherDeregistration(byte[] ID) {
 		try {
 			int pubId = Integer.parseInt((String)MessageBuilder.deserialize(ID));
-			if (pubList.containsKey(ID)) {
-				pubList.remove(ID);
-				pubURLs.remove(ID);
+			if (pubList.containsKey(pubId)) {
+				pubList.remove(pubId);
+				pubURLs.remove(pubId);
 				return DEREGISTRATION_OK;
 			} else {
 				return Integer.toString(ERROR_PUBLISHER_URL_NOT_FOUND);
