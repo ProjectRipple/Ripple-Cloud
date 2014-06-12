@@ -18,9 +18,11 @@ import ds.ripple.pub.util.MessageBuilder;
  * Publisher class provides API for publisher in the publish-subscribe pattern.
  * The Publisher class uses ZeroMQ libraries to communicate with Directory Services
  * ("REQ" socket type) and to publish messages ("PUB" socket type).
+ * 
  * @author Pawel Grzebala
  */
 public class Publisher {
+	// directory services socket request port
 	private final static int REQUEST_PORT = 5555;
 	
 	private PublisherRecord mPublisherRecord = new PublisherRecord();
@@ -32,8 +34,9 @@ public class Publisher {
 	private boolean isRegistered = false; 
 	
 	/**
-	 * Creates a Publisher object.
-	 * @param publisherURL String that contains URL of the publisher, ex: tcp://localhost
+	 * Creates a Publisher object. 
+	 * @param publisherURL String that contains URL of the publisher, ex: tcp://localhost. 
+	 *                     
 	 * @param dsURL String that contain URL of the Directory Services, ex: tcp://192.168.0.1
 	 * @param topic Specifies a topic of this publisher
 	 * @param publisherName Name of this publisher
@@ -81,7 +84,6 @@ public class Publisher {
 		try {
 			processRegisterReply(""+ (int)MessageBuilder.deserialize(reply));
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
