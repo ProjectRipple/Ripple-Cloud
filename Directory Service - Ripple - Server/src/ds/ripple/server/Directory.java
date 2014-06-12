@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -19,6 +21,8 @@ public class Directory {
 
 	/* Map to store Unique Id and Url of the publishers */
 	private HashMap<Integer, String> pubURLs = new HashMap<Integer, String>();
+	
+	private HashSet<Integer> Pub_active=new HashSet<Integer>();
 
 	protected static final int ERROR_URL_ALREADY_EXISTS = -1;
 	protected static final int ERROR_PUBLISHER_PARSING_ERROR = -2;
@@ -172,12 +176,28 @@ public class Directory {
 		try {
 			int pubId = (int) MessageBuilder.deserialize(msg);
 			if(pubURLs.containsKey(pubId)){
-				return pubId;
+				//return pubId;
+				this.Pub_active.add(pubId);
+				
 			}
 			return ERROR_PUBLISHER_NOT_IN_DS;
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 			return ERROR_PUBLISHER_NOT_IN_DS;
 		} 
+	}
+	public boolean  updatePubAlive(){
+		Integer val;
+		boolean update=false;
+			Iterator<Integer> itr=pubURLs.keySet().iterator();
+			while (itr.hasNext()){
+				val = (Integer) itr.next(); 
+				if(!Pub_active.contains(val)){
+					pubList.remove(val);
+					pubURLs.remove(val);
+					update=true;
+				}
+			}
+			return update;
 	}
 }

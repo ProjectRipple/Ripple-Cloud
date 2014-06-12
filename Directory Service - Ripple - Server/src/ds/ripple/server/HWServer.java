@@ -2,23 +2,26 @@ package ds.ripple.server;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 
-import ds.ripple.common.PublisherRecord;
+
 import ds.ripple.pub.util.DirectoryPublisher;
 import ds.ripple.pub.util.MessageBuilder;
 
 public class HWServer {
-	private int id;
-	private String name, reply;
+	
+	private String reply;
 	private Directory dir = new Directory();
 	private DirectoryPublisher dirPub;
 	
 	private Context context;
 	private Socket responder;
+	private Timer tmr;
 	
 	private Thread server;
 	
@@ -35,12 +38,27 @@ public class HWServer {
 		responder = context.socket(ZMQ.REP);
 		responder.bind("tcp://*:5555");
 		dirPub = new DirectoryPublisher(context, dir);
+		 
 	}
+	
+	
 	
 	public void start() {
 		isRunning = true;
+		tmr=new Timer();
+		tmr.scheduleAtFixedRate(new TimerTask() {
+			  @Override
+			  public void run() {
+			   if(dir.updatePubAlive()){
+				   dirPub.publish();
+				   System.out.println("update");
+			   }
+			  // System.out.println("updated pub list");
+			  }
+			}, 60*1000, 60*1000);
+		
 		server = new Thread(new Runnable() {
-			
+					
 			@Override
 			public void run() {
 				while (isRunning) {
@@ -102,8 +120,7 @@ public class HWServer {
 							// handle unrecognized commands somehow
 							break;
 					}
-				}
-				
+				}			
 				responder.close();
 				context.term();
 			}
