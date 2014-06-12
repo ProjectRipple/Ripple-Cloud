@@ -177,8 +177,7 @@ public class Directory {
 			int pubId = (int) MessageBuilder.deserialize(msg);
 			if(pubURLs.containsKey(pubId)){
 				//return pubId;
-				this.Pub_active.add(pubId);
-				
+				Pub_active.add(pubId);			
 			}
 			return ERROR_PUBLISHER_NOT_IN_DS;
 		} catch (ClassNotFoundException | IOException e) {
@@ -198,6 +197,7 @@ public class Directory {
 					update=true;
 				}
 			}
+			Pub_active.clear();
 			return update;
 	}
 }
