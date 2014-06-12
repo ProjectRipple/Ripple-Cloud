@@ -27,6 +27,7 @@ public class HWServer {
 	private static final byte PUBLISHER_REGISTRATION = 0x01;
 	private static final byte PUBLISHER_DEREGISTRATION = 0x02;
 	private static final byte PUBLISHER_INFO_UPDATE = 0x04;
+	private static final byte PUBLISHER_ALIVE = 0x05;
 	private static final byte OBSERVER_MAP_REQUEST = 0x03;
 	
 	public HWServer() {
@@ -75,6 +76,15 @@ public class HWServer {
 							String updateReplyCode = dir.updatePublisherInfo(requestPayload);
 							try {
 								responder.send(MessageBuilder.buildMsg(updateReplyCode), 0);
+								dirPub.publish();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							break;
+						case PUBLISHER_ALIVE:
+							int alive= dir.pubAlive(requestPayload);
+							try {
+								responder.send(MessageBuilder.buildMsg(alive), 0);
 								dirPub.publish();
 							} catch (IOException e) {
 								e.printStackTrace();
