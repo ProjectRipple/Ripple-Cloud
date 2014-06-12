@@ -16,14 +16,14 @@ import ds.ripple.pub.util.MessageBuilder;
 
 /**
  * Publisher class provides API for publisher in the publish-subscribe pattern.
- * The Publisher class uses ZeroMQ libraries to communicate with Directory Services
- * ("REQ" socket type) and to publish messages ("PUB" socket type).
+ * The Publisher class uses ZeroMQ libraries to communicate with Directory
+ * Services ("REQ" socket type) and to publish messages ("PUB" socket type).
  * 
  * @author Pawel Grzebala
  */
 public class Publisher {
 	// directory services socket request port
-	private final static int REQUEST_PORT = 5555;
+	private static int REQUEST_PORT = 5555;
 	
 	private PublisherRecord mPublisherRecord = new PublisherRecord();
 	private Context mContext;
@@ -34,12 +34,17 @@ public class Publisher {
 	private boolean isRegistered = false; 
 	
 	/**
-	 * Creates a Publisher object. 
-	 * @param publisherURL String that contains URL of the publisher, ex: tcp://localhost. 
-	 *                     
-	 * @param dsURL String that contain URL of the Directory Services, ex: tcp://192.168.0.1
-	 * @param topic Specifies a topic of this publisher
-	 * @param publisherName Name of this publisher
+	 * Creates a Publisher object.
+	 * 
+	 * @param publisherURL
+	 *            String that contains URL of the publisher, ex: tcp://localhost
+	 * @param dsURL
+	 *            String that contain URL of the Directory Services, ex:
+	 *            tcp://192.168.0.1 . Connects to default port number (5555)
+	 * @param topic
+	 *            Specifies a topic of this publisher
+	 * @param publisherName
+	 *            Name of this publisher
 	 */
 	public Publisher(String publisherURL, String dsURL, String topic,
 			String publisherName) {
@@ -48,24 +53,84 @@ public class Publisher {
 		mPublisherRecord.setPub_name(publisherName);
 		mPublisherRecord.setTopics(new String[] { topic });
 	}
+	
+	/**
+	 * Creates a Publisher object.
+	 * 
+	 * @param publisherURL
+	 *            String that contains URL of the publisher, ex: tcp://localhost
+	 * @param dsURL
+	 *            String that contain URL of the Directory Services, ex:
+	 *            tcp://192.168.0.1
+	 * @param dsPort
+	 *            Port number of the Directory Services server that this
+	 *            publisher will use to connect to the Directory Services server
+	 * @param topic
+	 *            Specifies a topic of this publisher
+	 * @param publisherName
+	 *            Name of this publisher
+	 */
+	public Publisher(String publisherURL, String dsURL, int dsPort, String topic, String publisherName) {
+		mdsURL = dsURL;
+		REQUEST_PORT = dsPort;
+		mPublisherRecord.setPub_address(publisherURL);
+		mPublisherRecord.setPub_name(publisherName);
+		mPublisherRecord.setTopics(new String[] { topic });
+	}
 
 	/**
 	 * Creates a Publisher object.
-	 * @param publisherURL String that contains URL of the publisher, ex: tcp://localhost
-	 * @param dsURL String that contain URL of the Directory Services, ex: tcp://192.168.0.1
-	 * @param topic Specifies topics of this publisher
-	 * @param publisherName Name of this publisher
+	 * 
+	 * @param publisherURL
+	 *            String that contains URL of the publisher, ex:
+	 *            tcp://localhost.
+	 * @param dsURL
+	 *            String that contain URL of the Directory Services, ex:
+	 *            tcp://192.168.0.1 .Connects to default port number(5555)
+	 * @param topic
+	 *            Specifies topics of this publisher
+	 * @param publisherName
+	 *            Name of this publisher
 	 */
 	public Publisher(String publisherURL, String dsURL, String[] topic,
 			String publisherName) {
+		mdsURL = dsURL;
+		mPublisherRecord.setPub_address(publisherURL);
+		mPublisherRecord.setPub_name(publisherName);
+		mPublisherRecord.setTopics(topic);
+	}
+	
+	/**
+	 * Creates a Publisher object.
+	 * 
+	 * @param publisherURL
+	 *            String that contains URL of the publisher, ex:
+	 *            tcp://localhost.
+	 * @param dsURL
+	 *            String that contain URL of the Directory Services, ex:
+	 *            tcp://192.168.0.1
+	 * @param dsPort
+	 *            Port number of the Directory Services server that this
+	 *            publisher will use to connect to the Directory Services server
+	 * @param topic
+	 *            Specifies topics of this publisher
+	 * @param publisherName
+	 *            Name of this publisher
+	 */
+	public Publisher(String publisherURL, String dsURL, int dsPort, String[] topic,
+			String publisherName) {
+		mdsURL = dsURL;
+		REQUEST_PORT = dsPort;
 		mPublisherRecord.setPub_address(publisherURL);
 		mPublisherRecord.setPub_name(publisherName);
 		mPublisherRecord.setTopics(topic);
 	}
 
 	/**
-	 * Registers this publisher in the Director Services. This function also opens
-	 * ZeroMQ PUB socket on a random port that will be used to publish messages. 
+	 * Registers this publisher in the Director Services. This function also
+	 * opens ZeroMQ PUB socket on a random port that will be used to publish
+	 * messages.
+	 * 
 	 * @throws URLAlreadyExistsException
 	 * @throws URLParsingException
 	 */
@@ -89,7 +154,8 @@ public class Publisher {
 	}
 
 	/**
-	 * Checks the response from Directory Services to registration request. 
+	 * Checks the response from Directory Services to registration request.
+	 * 
 	 * @param reply
 	 * @throws URLAlreadyExistsException
 	 * @throws URLParsingException
@@ -108,8 +174,9 @@ public class Publisher {
 	}
 	
 	/**
-	 * Deregisters this publisher from the Directory Services list. Also closes the ZeroMQ
-	 * PUB socket. Does nothing if this publisher was not registered.
+	 * Deregisters this publisher from the Directory Services list. Also closes
+	 * the ZeroMQ PUB socket. Does nothing if this publisher was not registered.
+	 * 
 	 * @throws URLNotFoundException
 	 */
 	public void deregister() throws URLNotFoundException{
@@ -129,6 +196,7 @@ public class Publisher {
 	
 	/**
 	 * Checks the response from Directory Services to deregistration request.
+	 * 
 	 * @param reply
 	 * @throws URLNotFoundException
 	 */
@@ -142,10 +210,13 @@ public class Publisher {
 	
 	/**
 	 * Publishes specified message under specified topic.
-	 * @param topic Must be in the list of topics of this publisher
-	 * @param message Cannot be null
+	 * 
+	 * @param topic
+	 *            Must be in the list of registered topics of this publisher
+	 * @param message
+	 *            Cannot be null
 	 * @throws TopicNotRegisteredException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void publish(String topic, String message) throws TopicNotRegisteredException, IOException {
 		if (message == null) {
@@ -162,9 +233,10 @@ public class Publisher {
 	}
 	
 	/**
-	 * Updates the list of topics of this publisher. The old list will be overridden 
-	 * by the new one. The method is silent on success, throws UpdateFailedException
-	 * on failure. 
+	 * Updates the list of topics of this publisher. The old list will be
+	 * overridden by the new one. The method is silent on success, throws
+	 * UpdateFailedException on failure.
+	 * 
 	 * @param topics
 	 * @throws UpdateFailedException
 	 */
@@ -181,8 +253,9 @@ public class Publisher {
 	}
 	
 	/**
-	 * Internal method that will process update reply from Directory Services 
+	 * Internal method that will process update reply from Directory Services
 	 * server
+	 * 
 	 * @param reply
 	 * @throws UpdateFailedException
 	 */
@@ -196,9 +269,10 @@ public class Publisher {
 	
 	/**
 	 * Returns the publisher's registered topics.
-	 * @return
+	 * 
+	 * @return Copy of topic lists.
 	 */
 	public String[] getTopics() {
-		return mPublisherRecord.getTopics();
+		return Arrays.copyOf(mPublisherRecord.getTopics(), mPublisherRecord.getTopics().length);
 	}
 }

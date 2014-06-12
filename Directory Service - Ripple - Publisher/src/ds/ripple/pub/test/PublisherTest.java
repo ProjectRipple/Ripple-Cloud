@@ -11,6 +11,13 @@ import ds.ripple.pub.exceptions.URLNotFoundException;
 import ds.ripple.pub.exceptions.URLParsingException;
 import ds.ripple.pub.exceptions.UpdateFailedException;
 
+/**
+ * This a sample class that demonstrates how to use the Publisher API. Code is
+ * self-explanatory.
+ * 
+ * @author pawel
+ *
+ */
 public class PublisherTest {
 	static String topic;
 	/**
@@ -69,7 +76,7 @@ public class PublisherTest {
 	
 	public static void publish(Publisher pub, Scanner in) {
 		System.out.println("Enter the message: ");
-		String msg = in.next();	
+		String msg = in.nextLine();	
 		try {
 			pub.publish(topic, msg);
 		} catch (TopicNotRegisteredException | IOException e) {
@@ -83,7 +90,7 @@ public class PublisherTest {
 		System.out.println("Enter the topic: ");
 		String topic = in.next();
 		System.out.println("Enter the message: ");
-		String message = in.next();
+		String message = in.nextLine();
 		try {
 			pub.publish(topic, message);
 		} catch (TopicNotRegisteredException | IOException e) {
