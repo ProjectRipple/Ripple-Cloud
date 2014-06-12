@@ -8,14 +8,14 @@ import ds.ripple.common.PublisherRecord;
  * This interface has to be implemented by a class that wants to receive updates
  * from the Directory Services server. publishedMapUpdate method will be called
  * every time the Directory Services server publishes an new list of available
- * publishers.
+ * publishers/topics.
  * 
  * @author pawel
  * 
  */
 public interface MapListener {
 	/**
-	 * Called when a new list of publishers has been received from the Directory
+	 * Called when a new list of publishers/topics has been received from the Directory
 	 * Services server.
 	 * 
 	 * @param map

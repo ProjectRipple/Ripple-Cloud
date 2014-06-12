@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
 
 import ds.ripple.common.PublisherRecord;
 
@@ -15,15 +14,44 @@ public class MessageBuilder {
 	private final static byte MSG_DEREGISTER_CODE = 0x02;
 	private final static byte MSG_UPDATE_CODE = 0x04;
 	
+	/**
+	 * Constructs registration message.
+	 * 
+	 * @param pr
+	 *            PublisherRecord object that will be sent to the Directory
+	 *            Services server.
+	 * @return Serialized registration message on success, null on failure
+	 */
 	public static byte[] getRegisterMsg(PublisherRecord pr) {
 		return buildMsg(MSG_REGISTER_CODE, pr);
 	}
 	
+	/**
+	 * Constructs deregistration message
+	 * 
+	 * @param s
+	 *            String that contains an ID assigned to the publisher by the
+	 *            Directory Services server (id is assigned when a publisher
+	 *            registers itself at the Directory Services server)
+	 * @return Serialized deregistration message on success, null on failure
+	 */
 	public static byte[] getDeregisterMsg(String s) {
 		return buildMsg(MSG_DEREGISTER_CODE, s);
 	}
 	
+	/**
+	 * Constructs update message that will be used to update information about
+	 * this publisher.
+	 * 
+	 * @param pr
+	 *            PublisherRecord object must contain ID of the publisher.
+	 *            Method will return null if the PublisherRecord object doesn't
+	 *            have an ID
+	 * @return Serialized update message on success, null on failure
+	 */
 	public static byte[] getUpdateMsg(PublisherRecord pr) {
+		if (pr.getPub_Id() == null)
+			return null;
 		return buildMsg(MSG_UPDATE_CODE, pr);
 	}
 	
@@ -43,6 +71,12 @@ public class MessageBuilder {
 		}
 	}
 	
+	/**
+	 * Serializes an object
+	 * @param obj Object to serialize
+	 * @return Serialized object
+	 * @throws IOException
+	 */
 	public static byte[] serialize(Object obj) throws IOException {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		ObjectOutputStream o = new ObjectOutputStream(b);
@@ -52,6 +86,13 @@ public class MessageBuilder {
 		return b.toByteArray();
 	}
 	
+	/**
+	 * Deserializes an object
+	 * @param bytes Object to deserialize
+	 * @return Deserialized object
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public static Object deserialize(byte[] bytes) throws ClassNotFoundException, IOException {
 		ByteArrayInputStream b= new ByteArrayInputStream(bytes);
 		ObjectInputStream o = new ObjectInputStream(b);
