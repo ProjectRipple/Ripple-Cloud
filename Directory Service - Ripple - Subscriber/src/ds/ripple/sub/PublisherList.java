@@ -55,9 +55,6 @@ public class PublisherList {
 	}
 	
 	public Publisher[] getPublishers() {
-		if (mList.isEmpty()) {
-			return null;
-		}
 		return mList.toArray(new Publisher[mList.size()]);
 	}
 	

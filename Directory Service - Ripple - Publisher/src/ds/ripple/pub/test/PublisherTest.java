@@ -2,14 +2,18 @@ package ds.ripple.pub.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
+import ds.ripple.common.XML.XMLMessage;
+import ds.ripple.common.XML.XMLMessage.XMLMessageBuilder;
 import ds.ripple.pub.Publisher;
 import ds.ripple.pub.exceptions.TopicNotRegisteredException;
 import ds.ripple.pub.exceptions.URLAlreadyExistsException;
 import ds.ripple.pub.exceptions.URLNotFoundException;
 import ds.ripple.pub.exceptions.URLParsingException;
 import ds.ripple.pub.exceptions.UpdateFailedException;
+import ds.ripple.pub.exceptions.XMLMissingArgumentException;
 
 /**
  * This a sample class that demonstrates how to use the Publisher API. Code is
@@ -28,26 +32,26 @@ public class PublisherTest {
 		
 		Scanner in = new Scanner(System.in);
 		System.out.println("Enter publisher URL (ex: tcp://192.168.0.10):");
-		String pubURL = in.next();
+		String pubURL = in.nextLine();
 		System.out.println("Enter Directory Services URL (ex: tcp://192.168.0.11):");
-		String dsURL = in.next();
+		String dsURL = in.nextLine();
 		System.out.println("Enter a topic:");
-		topic = in.next();
+		topic = in.nextLine();
 		System.out.println("Enter publisher name:");
-		String pubName = in.next();
+		String pubName = in.nextLine();
 		
 		Publisher pub = new Publisher(pubURL, dsURL, topic, pubName);
-		
+	
 		try {
 			pub.register();
 		} catch (URLAlreadyExistsException | URLParsingException e) {
 			e.printStackTrace();
 		}
 		
-		usage();
 		String cmd;
 		do {
-			cmd = in.next();
+			usage();
+			cmd = in.nextLine();
 			if (cmd.equals("P")) {
 				publish(pub, in);
 			} else if (cmd.equals("D")) {
@@ -59,18 +63,21 @@ public class PublisherTest {
 				appendTopics(pub, in);
 			} else if (cmd.equals("X")) {
 				publishX(pub, in);
+			} else if (cmd.equals("E")) {
+				publishE(pub, in);
 			}
 		} while (!cmd.equals("quit"));
 	}
 	
 	public static void usage() {
 		System.out.println("This is a publisher test program:");
-		System.out.println("1) To publish under the " + topic + " press [P]");
+		System.out.println("1) To publish under the topic \"" + topic + "\" press [P]");
 		System.out.println("2) To publish under another topics press [X]");
-		System.out.println("3) To modify topic list press [T]");
-		System.out.println("4) To append topic list press [A]");
-		System.out.println("5) To deregister & exit press [D]");
-		System.out.println("6) To force quit type [quit]");
+		System.out.println("3) To publish Ripple Event message press [E]");
+		System.out.println("4) To modify topic list press [T]");
+		System.out.println("5) To append topic list press [A]");
+		System.out.println("6) To deregister & exit press [D]");
+		System.out.println("7) To force quit type [quit]");
 		System.out.println("Press enter to confirm.");
 	}
 	
@@ -88,7 +95,7 @@ public class PublisherTest {
 	
 	public static void publishX(Publisher pub, Scanner in) {
 		System.out.println("Enter the topic: ");
-		String topic = in.next();
+		String topic = in.nextLine();
 		System.out.println("Enter the message: ");
 		String message = in.nextLine();
 		try {
@@ -98,6 +105,60 @@ public class PublisherTest {
 			return;
 		}
 		System.out.println("Message sent!");
+	}
+	
+	public static void publishE(Publisher pub, Scanner in) {
+		System.out.println("Enter Event ID");
+		String eventId = in.nextLine();
+		String date = new Date().toString();
+		System.out.println("Enter the name of producer of the event:");
+		String producer = in.nextLine();
+		System.out.println("Location of the event:");
+		System.out.println("\tlongitude:");
+		String longitude = in.nextLine();
+		System.out.println("\tlatitude:");
+		String latitude = in.nextLine();
+		System.out.println("\taltitude:");
+		String altitude = in.nextLine();
+		System.out.println("\tlocation description:");
+		String description = in.nextLine();
+		System.out.println("Enter feed items, once done type \"done\" for feed item type");
+		ArrayList<String> type = new ArrayList<String>();
+		ArrayList<String> unit = new ArrayList<String>();
+		ArrayList<String> value = new ArrayList<String>();
+		String input;
+		boolean stop = false;
+		do {
+			System.out.println("\tFeed item type");
+			input = in.nextLine();
+			if (input.equals("done")) {
+				stop = true;
+				break;
+			} else {
+				type.add(input);
+			}
+			System.out.println("\tFeed item unit");
+			unit.add(in.nextLine());
+			System.out.println("\tFeed item value:");
+			value.add(in.nextLine());
+		} while (!stop);
+		XMLMessageBuilder builder = new XMLMessageBuilder(eventId)
+			.producer(producer)
+			.timestamp(date)
+			.location(longitude, latitude, altitude, description);
+		for (int i=0 ; i < type.size() ; i++) {
+			builder.addContentSingleValue(type.get(i), unit.get(i), value.get(i));
+		}
+		XMLMessage msg = null;
+		try {
+			msg = builder.build();
+		} catch (XMLMissingArgumentException e) {
+			e.printStackTrace();
+		}
+		
+		pub.publish(msg);
+		
+		System.out.println("Ripple event message sent!");
 	}
 
 	public static void deregister(Publisher pub) {
@@ -118,10 +179,10 @@ public class PublisherTest {
 		
 		System.out.println("Enter new topics. Once done, type \"done\":");
 		ArrayList<String> topics = new ArrayList<String>();
-		String input = in.next();
+		String input = in.nextLine();
 		while (!input.equals("done")) {
 			topics.add(input);
-			input = in.next();
+			input = in.nextLine();
 		}
 		
 		try {
@@ -142,10 +203,10 @@ public class PublisherTest {
 		}
 		
 		System.out.println("Enter new topics. Once done, type \"done\":");
-		String input = in.next();
+		String input = in.nextLine();
 		while (!input.equals("done")) {
 			topics.add(input);
-			input = in.next();
+			input = in.nextLine();
 		}
 		
 		try {

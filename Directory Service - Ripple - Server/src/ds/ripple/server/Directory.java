@@ -1,10 +1,8 @@
 package ds.ripple.server;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,7 +25,7 @@ public class Directory {
 	protected static final int ERROR_URL_ALREADY_EXISTS = -1;
 	protected static final int ERROR_PUBLISHER_PARSING_ERROR = -2;
 	protected static final int ERROR_PUBLISHER_URL_NOT_FOUND = -4;
-	protected static final int  ERROR_PUBLISHER_NOT_UPDATED = -3;
+	protected static final int ERROR_PUBLISHER_NOT_UPDATED = -3;
 	protected static final int ERROR_PUBLISHER_NOT_IN_DS = -5;
 	protected static final String DEREGISTRATION_OK = "Ok";
 
@@ -45,14 +43,12 @@ public class Directory {
 		ByteArrayInputStream in = new ByteArrayInputStream(pub);
 		try {
 			ObjectInputStream is = new ObjectInputStream(in);
-			// if (is.readObject() instanceof PublisherRecord) {
 			tmpPubRecord = (PublisherRecord) is.readObject();
 			if (pubURLs.containsValue(tmpPubRecord.getPub_address())) {
 				return ERROR_URL_ALREADY_EXISTS;
 			}else if(this.checkAddress(tmpPubRecord.getPub_address())){
 				
 			}
-			// LOGGER.info("data recieved for registration is not in format");
 			return 0;
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -174,10 +170,10 @@ public class Directory {
 	
 	public int pubAlive(byte[] msg){
 		try {
-			int pubId = (int) MessageBuilder.deserialize(msg);
+			int pubId = Integer.parseInt((String) MessageBuilder.deserialize(msg));
 			if(pubURLs.containsKey(pubId)){
-				//return pubId;
-				Pub_active.add(pubId);			
+				Pub_active.add(pubId);
+				return pubId;
 			}
 			return ERROR_PUBLISHER_NOT_IN_DS;
 		} catch (ClassNotFoundException | IOException e) {
@@ -185,6 +181,7 @@ public class Directory {
 			return ERROR_PUBLISHER_NOT_IN_DS;
 		} 
 	}
+	
 	public boolean  updatePubAlive(){
 		Integer val;
 		boolean update=false;

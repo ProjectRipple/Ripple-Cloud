@@ -124,6 +124,7 @@ public class Observer {
 				byte[] payload = mSubSocket.recv(0);
 				try {
 					map = MessageBuilder.getHashMapFromDSReply(payload);
+					
 					mapUpdate();
 				} catch (ClassNotFoundException | IOException e) {
 					System.out
