@@ -1,11 +1,10 @@
 package ds.ripple.common;
 
 import java.io.Serializable;
-import java.net.URL;
 
 public class PublisherRecord implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Integer pub_Id;
 	private String pub_address;
 	private String pub_name;

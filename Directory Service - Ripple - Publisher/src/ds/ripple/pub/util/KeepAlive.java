@@ -3,6 +3,7 @@ package ds.ripple.pub.util;
 import java.io.IOException;
 
 import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZMQException;
 
 import ds.ripple.pub.Publisher;
 import ds.ripple.pub.exceptions.PublisherNotRegisteredException;
@@ -43,6 +44,8 @@ public class KeepAlive implements Runnable {
 			// has been lost
 			e1.printStackTrace();
 			mPub.terminate();
+		} catch (ZMQException e2) {
+			// this is expected at some point (when the client disconnects)
 		}
 	} 
 

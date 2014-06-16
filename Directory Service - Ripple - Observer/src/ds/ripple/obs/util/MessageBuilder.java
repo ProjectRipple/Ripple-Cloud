@@ -32,10 +32,12 @@ public class MessageBuilder {
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	public static HashMap<Integer, PublisherRecord> getHashMapFromDSReply(
 			byte[] bytes) throws ClassNotFoundException, IOException {
 		try {
-			return (HashMap<Integer, PublisherRecord>) deserialize(bytes);
+			Object obj = deserialize(bytes);
+			return (obj instanceof HashMap<?, ?>) ? (HashMap<Integer, PublisherRecord>)obj : null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

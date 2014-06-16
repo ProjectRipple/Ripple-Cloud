@@ -8,6 +8,7 @@ import java.util.TimerTask;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZMQException;
 
 
 import ds.ripple.pub.util.DirectoryPublisher;
@@ -60,7 +61,20 @@ public class HWServer {
 			@Override
 			public void run() {
 				while (isRunning) {
-					byte[] request = responder.recv(0);
+					byte[] request = null;
+					try {
+						request = responder.recv(0);
+					} catch (ZMQException e) {
+						if (isRunning) {
+							// unexpected error, nothing we can do, let's die
+							e.printStackTrace();
+							isRunning = false;
+							break;
+						} else {
+							// this was likely done on purpose, exit silently
+							break;
+						}
+					}
 					byte[] requestPayload = Arrays.copyOfRange(request, 1, request.length);
 					byte requestHeader = request[0];
 					switch (requestHeader) {
@@ -117,15 +131,14 @@ public class HWServer {
 							break;
 					}
 				}			
-				responder.close();
-				context.term();
+				context.close();
 			}
 		});
 		server.start();
 	}
 	
 	public void stop() {
-		responder.close();
 		isRunning = false;
+		context.close();
 	}
 }

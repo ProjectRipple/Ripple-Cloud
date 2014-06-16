@@ -1,11 +1,8 @@
 package ds.ripple.obs.test;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Scanner;
 
 import ds.ripple.common.PublisherRecord;
@@ -27,16 +24,19 @@ public class ObserverTest {
 
 		Scanner in = new Scanner(System.in);
 		System.out.println("Enter URL of D.S. server (i.e. tcp://192.168.0.1): ");
-		String url = in.next();
-		in.close();
-
+		String url = in.nextLine();
+		System.out.println("Starting to listen... Press enter to exit.");
+		
 		// creates the Observer object
 		Observer obs = new Observer(url, new MapUpdates());
 		// connects to the Directory Services server
 		obs.connect();
 
-		while (true)
-			;
+		while (in.nextLine().equals("\n"));
+		System.out.println("Cleaning up...");
+		obs.disconnect();
+		in.close();
+		System.out.println("Done. Exiting.");
 	}
 
 	public static void usage() {

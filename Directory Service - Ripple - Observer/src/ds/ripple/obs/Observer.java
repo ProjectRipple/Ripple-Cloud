@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQException;
 import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 
@@ -12,7 +13,7 @@ import ds.ripple.obs.util.MessageBuilder;
 
 /**
  * Observer class provides an API that allows the user to keep track of
- * publishers' information (such as publisher API, publisher topics, etc) that
+ * publishers' information (such as publisher addresses, publisher topics, etc) that
  * are registered at the Directory Services server.
  * 
  * @author pawel
@@ -20,17 +21,36 @@ import ds.ripple.obs.util.MessageBuilder;
  */
 public class Observer {
 	// port number at which the Directory Services server listens for requests
-	private final static int REQ_PORT = 5555;
+	private int REQ_PORT = 5555;
 	// port number that the Directory Services server uses to publish list
 	// of publishers' information
-	private final static int SUB_PORT = 5556;
+	private int SUB_PORT = 5556;
 
 	private Context mContext;
 	private Socket mSubSocket, mReqSocket;
 	private String mdsURL;
 	private HashMap<Integer, PublisherRecord> map;
 	private MapListener mListener;
+	
+	private Thread mThread;
+	private boolean mIsListening;
 
+	/**
+	 * Constructs Observer object. Class that implements MapListener interface
+	 * must be provided.
+	 * 
+	 * @param dsURL
+	 *            URL of the Directory Services server. ex: tcp://192.168.0.1
+	 *            .Uses default port numbers 5555 & 5556
+	 * @param listener
+	 *            Class that implements MapListener interface
+	 */
+	public Observer(String dsURL, MapListener listener) {
+		assert listener != null : "MapListener object cannot be null";
+		mdsURL = dsURL;
+		mListener = listener;
+	}
+	
 	/**
 	 * Constructs Observer object. Class that implements MapListener interface
 	 * must be provided.
@@ -39,11 +59,19 @@ public class Observer {
 	 *            URL of the Directory Services server. ex: tcp://192.168.0.1
 	 * @param listener
 	 *            Class that implements MapListener interface
+	 * @param reqPort
+	 *            Port number that is used by Directory Services server to
+	 *            listen to incoming requests
+	 * @param pubPort
+	 *            Port number that is used by Directory Services server to
+	 *            publish updates on publishers addresses/topics
 	 */
-	public Observer(String dsURL, MapListener listener) {
+	public Observer(String dsURL, MapListener listener, int reqPort, int pubPort) {
 		assert listener != null : "MapListener object cannot be null";
 		mdsURL = dsURL;
 		mListener = listener;
+		REQ_PORT = reqPort;
+		SUB_PORT = pubPort;
 	}
 
 	/**
@@ -62,6 +90,19 @@ public class Observer {
 
 		processMapRequestReply(reply);
 	}
+	
+	/**
+	 * Disconnects this observer from Directory Services server. This is a blocking 
+	 * function, once it return this observer will be inactive. Call connect() to 
+	 * activate it again.
+	 */
+	public void disconnect() {
+		mIsListening = false;
+		mSubSocket.close();
+		mReqSocket.close();
+		mContext.close();
+		while (mThread.isAlive());
+	}
 
 	/**
 	 * Deserializes response from the server. Also starts a separate thread that
@@ -76,7 +117,8 @@ public class Observer {
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		} finally {
-			new Thread(new SubscriptionListener()).start();
+			mThread = new Thread(new SubscriptionListener());
+			mThread.start();
 		}
 	}
 
@@ -89,8 +131,8 @@ public class Observer {
 
 	/**
 	 * This class connects to the Directory Services server, and starts
-	 * listening on port (5556) that the Directory Services uses to send updates
-	 * about the publisher/topic list.
+	 * listening on port (5556 or other specified by the user) that the
+	 * Directory Services uses to send updates about the publisher/topic list.
 	 * 
 	 * @author pawel
 	 * 
@@ -111,8 +153,14 @@ public class Observer {
 		 */
 		@Override
 		public void run() {
-			while (true) {
-				byte[] bytes = mSubSocket.recv(0);
+			mIsListening = true;
+			while (mIsListening) {
+				byte[] bytes = null;
+				try {
+					bytes = mSubSocket.recv(0);
+				} catch (ZMQException e) {
+					return;
+				}
 				try {
 					if (!(new String(bytes, "UTF-8").equals("DIR"))) {
 						break;
