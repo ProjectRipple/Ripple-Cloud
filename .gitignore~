@@ -8,6 +8,7 @@ libs/
 *.tmp
 *.bak
 *.ucls
+*.png
 *.swp
 *~.nib
 local.properties
