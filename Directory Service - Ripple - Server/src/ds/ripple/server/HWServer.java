@@ -130,6 +130,7 @@ public class HWServer {
 	
 	public void stop() {
 		responder.close();
+		tmr.cancel();
 		isRunning = false;
 	}
 }

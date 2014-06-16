@@ -128,16 +128,13 @@ public class Directory {
 		
 		if (pubAddr == null || pubAddr.length() < 7 || pubAddr.length() > 15)
 			return false;
-
-		// Check the address string, should be n.n.n.n format
 		
 		StringTokenizer token = new StringTokenizer(pubAddr, ".");
 		if (token.countTokens() != 4)
 			return false;
 
 		while (token.hasMoreTokens()) {
-			
-			// check for values in address are valid
+	// check for values in address are valid
 			try {
 				int val = Integer.valueOf(token.nextToken()).intValue();
 				if (val < 0 || val > 255)
