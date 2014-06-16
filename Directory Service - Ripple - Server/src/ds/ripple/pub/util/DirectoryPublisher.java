@@ -22,7 +22,7 @@ public class DirectoryPublisher {
 	}
 
     public void publish() { 
-            try {
+            try {	
             	publisher.sendMore("DIR");
 				publisher.send(MessageBuilder.buildMsg(dir.getDirectoryList()), 0);
 			} catch (IOException e) {

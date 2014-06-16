@@ -3,12 +3,12 @@
 .gradle
 bin/
 tmp/
+lib/
 *.tmp
 *.bak
 *.swp
 *~.nib
 local.properties
-.settings/
 .loadpath
 
 # External tool builders
@@ -31,5 +31,3 @@ local.properties
 
 # Eclipse
 .classpath
-.project
-.settings/

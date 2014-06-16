@@ -1,17 +1,22 @@
 package ds.ripple.pub;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
 import org.zeromq.ZMQ.Socket;
 
 import ds.ripple.common.PublisherRecord;
+import ds.ripple.common.XML.XMLMessage;
 import ds.ripple.pub.exceptions.TopicNotRegisteredException;
 import ds.ripple.pub.exceptions.URLAlreadyExistsException;
 import ds.ripple.pub.exceptions.URLNotFoundException;
 import ds.ripple.pub.exceptions.URLParsingException;
 import ds.ripple.pub.exceptions.UpdateFailedException;
+import ds.ripple.pub.util.KeepAlive;
 import ds.ripple.pub.util.MessageBuilder;
 
 /**
@@ -24,6 +29,10 @@ import ds.ripple.pub.util.MessageBuilder;
 public class Publisher {
 	// directory services socket request port
 	private static int REQUEST_PORT = 5555;
+	// topic for publishing events
+	private static final String PUB_EVENT_TOPIC = "EVENT";
+	
+	private ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
 	
 	private PublisherRecord mPublisherRecord = new PublisherRecord();
 	private Context mContext;
@@ -129,7 +138,7 @@ public class Publisher {
 	/**
 	 * Registers this publisher in the Director Services. This function also
 	 * opens ZeroMQ PUB socket on a random port that will be used to publish
-	 * messages.
+	 * messages. This is blocking function.
 	 * 
 	 * @throws URLAlreadyExistsException
 	 * @throws URLParsingException
@@ -151,6 +160,8 @@ public class Publisher {
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
+		
+		exec.scheduleAtFixedRate(new KeepAlive(this, mReqSocket, mPublisherID), 0, 45, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -176,6 +187,8 @@ public class Publisher {
 	/**
 	 * Deregisters this publisher from the Directory Services list. Also closes
 	 * the ZeroMQ PUB socket. Does nothing if this publisher was not registered.
+	 * This function should be called to properly deregister and deactivate this
+	 * publisher. This is blocking function.
 	 * 
 	 * @throws URLNotFoundException
 	 */
@@ -183,12 +196,26 @@ public class Publisher {
 		if (!isRegistered) {
 			return;
 		}
+		exec.shutdown();
+		
 		mReqSocket.send(MessageBuilder.getDeregisterMsg(String.valueOf(mPublisherID)), 0);
 		isRegistered = false;
 		String reply = mReqSocket.recv(0).toString();
 		
 		processDeregisterReply(reply);
 		
+		mReqSocket.close();
+		mPubSocket.close();
+		mContext.term();
+	}
+	
+	/**
+	 * Call to force resource deallocation without waiting for the Directory Services 
+	 * response. 
+	 */
+	public void terminate() {
+		exec.shutdown();
+		isRegistered = false;
 		mReqSocket.close();
 		mPubSocket.close();
 		mContext.term();
@@ -230,6 +257,21 @@ public class Publisher {
 		}
 		mPubSocket.sendMore(topic);
 		mPubSocket.send(MessageBuilder.serialize(message), 0);
+	}
+	
+	/**
+	 * Publishes Event message in form of XML file. See @XMLMessage,
+	 * XMLMessageBuilder, and Event classes descriptions for more details.
+	 * 
+	 * @param rippleEventMsg XMLmessage object that holds valid instance of Event class
+	 */
+	public void publish(XMLMessage rippleEventMsg) {
+		if (rippleEventMsg == null) {
+			return;
+		}
+		// message is already validate by XMLMessageBuilder class
+		mPubSocket.sendMore(PUB_EVENT_TOPIC);
+		mPubSocket.send(rippleEventMsg.getBytes(), 0);
 	}
 	
 	/**

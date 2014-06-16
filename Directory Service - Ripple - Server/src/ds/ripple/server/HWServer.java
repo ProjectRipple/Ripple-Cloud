@@ -45,18 +45,16 @@ public class HWServer {
 	
 	public void start() {
 		isRunning = true;
-		tmr=new Timer();
+		tmr = new Timer();
 		tmr.scheduleAtFixedRate(new TimerTask() {
-			  @Override
-			  public void run() {
-			   if(dir.updatePubAlive()){
-				   dirPub.publish();
-				   System.out.println("update");
-			   }
-			  // System.out.println("updated pub list");
-			  }
-			}, 60*1000, 60*1000);
-		
+			@Override
+			public void run() {
+				if (dir.updatePubAlive()) {
+					dirPub.publish();
+				}
+			}
+		}, 60 * 1000, 60 * 1000);
+
 		server = new Thread(new Runnable() {
 					
 			@Override
@@ -100,10 +98,9 @@ public class HWServer {
 							}
 							break;
 						case PUBLISHER_ALIVE:
-							int alive= dir.pubAlive(requestPayload);
+							int alive = dir.pubAlive(requestPayload);
 							try {
-								responder.send(MessageBuilder.buildMsg(alive), 0);
-								dirPub.publish();
+								responder.send(MessageBuilder.buildMsg(alive + ""), 0);
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -114,7 +111,6 @@ public class HWServer {
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
-							System.out.println("Map was sent as a response to request!");
 							break;
 						default:
 							// handle unrecognized commands somehow

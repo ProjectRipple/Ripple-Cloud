@@ -13,6 +13,7 @@ public class MessageBuilder {
 	private final static byte MSG_REGISTER_CODE = 0x01;
 	private final static byte MSG_DEREGISTER_CODE = 0x02;
 	private final static byte MSG_UPDATE_CODE = 0x04;
+	private final static byte MSG_KEEP_ALIVE = 0x05;
 	
 	/**
 	 * Constructs registration message.
@@ -69,6 +70,19 @@ public class MessageBuilder {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	/**
+	 * Constructs keep-alive message
+	 * 
+	 * @param s
+	 *            String that contains an ID assigned to the publisher by the
+	 *            Directory Services server (id is assigned when a publisher
+	 *            registers itself at the Directory Services server)
+	 * @return Serialized keep alive message on success, null on failure
+	 */
+	public static byte[] getKeepAliveMsg(String publisherID) {
+		return buildMsg(MSG_KEEP_ALIVE, publisherID);
 	}
 	
 	/**
