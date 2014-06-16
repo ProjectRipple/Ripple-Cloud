@@ -4,8 +4,10 @@
 bin/
 tmp/
 lib/
+libs/
 *.tmp
 *.bak
+*.ucls
 *.swp
 *~.nib
 local.properties
