@@ -13,8 +13,6 @@ import ds.ripple.sub.exceptions.InvalidTopicException;
 import ds.ripple.sub.exceptions.InvalidURLException;
 
 public class Subscriber {
-	private static final String PUB_EVENT_TOPIC = "EVENT";
-	
 	private Observer mObserver;
 	private Context mContext;
 	
@@ -69,7 +67,7 @@ public class Subscriber {
 			mRippleEventSubList = new ArrayList<RippleEventSubscription>();
 		}
 		RippleEventSubscription sub = new RippleEventSubscription(mContext, pubURL, listener);
-		sub.subscribe(PUB_EVENT_TOPIC);
+		sub.subscribe(RippleEventSubscription.PUB_EVENT_TOPIC);
 		mRippleEventSubList.add(sub);
 	}
 	
