@@ -1,8 +1,6 @@
 package ds.ripple.pub.util;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;

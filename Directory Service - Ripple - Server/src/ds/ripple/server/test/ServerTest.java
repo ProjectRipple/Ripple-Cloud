@@ -15,8 +15,9 @@ public class ServerTest {
 		System.out.println("Press enter to stop...");
 		Scanner in = new Scanner(System.in);
 		in.nextLine();
+		System.out.println("Waiting for server to terminate...");
 		server.stop();
-		System.out.println("Waiting for server thread to terminate...");
+		in.close();
 	}
 
 }

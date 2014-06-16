@@ -1,10 +1,7 @@
 package ds.ripple.sub;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
@@ -16,8 +13,6 @@ import ds.ripple.sub.exceptions.InvalidTopicException;
 import ds.ripple.sub.exceptions.InvalidURLException;
 
 public class Subscriber {
-	private final static int DS_PORT = 5555;
-	
 	private static final String PUB_EVENT_TOPIC = "EVENT";
 	
 	private Observer mObserver;

@@ -196,8 +196,6 @@ public class Publisher {
 		if (!isRegistered) {
 			return;
 		}
-		exec.shutdown();
-		
 		mReqSocket.send(MessageBuilder.getDeregisterMsg(String.valueOf(mPublisherID)), 0);
 		isRegistered = false;
 		String reply = mReqSocket.recv(0).toString();
@@ -207,6 +205,7 @@ public class Publisher {
 		mReqSocket.close();
 		mPubSocket.close();
 		mContext.term();
+		exec.shutdown();
 	}
 	
 	/**
