@@ -30,7 +30,7 @@ public class Publisher {
 	// directory services socket request port
 	private static int REQUEST_PORT = 5555;
 	// topic for publishing events
-	private static final String PUB_EVENT_TOPIC = "EVENT";
+	private static final String PUB_EVENT_TOPIC = "RippleEvent";
 	
 	private ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
 	
@@ -54,13 +54,20 @@ public class Publisher {
 	 *            Specifies a topic of this publisher
 	 * @param publisherName
 	 *            Name of this publisher
+	 * @param supportRippleEvent
+	 *            true if this publisher will publish Ripple Events in XML
+	 *            format (see Event class for details}] , false if it will not
 	 */
 	public Publisher(String publisherURL, String dsURL, String topic,
-			String publisherName) {
+			String publisherName, boolean supportRippleEvent) {
 		mdsURL = dsURL;
 		mPublisherRecord.setPub_address(publisherURL);
 		mPublisherRecord.setPub_name(publisherName);
-		mPublisherRecord.setTopics(new String[] { topic });
+		if (supportRippleEvent) {
+			mPublisherRecord.setTopics(new String[] { topic , PUB_EVENT_TOPIC});
+		} else {
+			mPublisherRecord.setTopics(new String[] { topic });
+		}
 	}
 	
 	/**
@@ -78,13 +85,20 @@ public class Publisher {
 	 *            Specifies a topic of this publisher
 	 * @param publisherName
 	 *            Name of this publisher
+	 * @param supportRippleEvent
+	 *            true if this publisher will publish Ripple Events in XML
+	 *            format (see Event class for details}] , false if it will not
 	 */
-	public Publisher(String publisherURL, String dsURL, int dsPort, String topic, String publisherName) {
+	public Publisher(String publisherURL, String dsURL, int dsPort, String topic, String publisherName, boolean supportRippleEvent) {
 		mdsURL = dsURL;
 		REQUEST_PORT = dsPort;
 		mPublisherRecord.setPub_address(publisherURL);
 		mPublisherRecord.setPub_name(publisherName);
-		mPublisherRecord.setTopics(new String[] { topic });
+		if (supportRippleEvent) {
+			mPublisherRecord.setTopics(new String[] { topic , PUB_EVENT_TOPIC});
+		} else {
+			mPublisherRecord.setTopics(new String[] { topic });
+		}
 	}
 
 	/**
@@ -100,13 +114,23 @@ public class Publisher {
 	 *            Specifies topics of this publisher
 	 * @param publisherName
 	 *            Name of this publisher
+	 * @param supportRippleEvent
+	 *            true if this publisher will publish Ripple Events in XML
+	 *            format (see Event class for details}] , false if it will not
 	 */
 	public Publisher(String publisherURL, String dsURL, String[] topic,
-			String publisherName) {
+			String publisherName, boolean supportRippleEvent) {
 		mdsURL = dsURL;
 		mPublisherRecord.setPub_address(publisherURL);
 		mPublisherRecord.setPub_name(publisherName);
-		mPublisherRecord.setTopics(topic);
+		if (supportRippleEvent) {
+			String[] topics = new String[topic.length + 1];
+			System.arraycopy(topic, 0, topics, 0, topic.length);
+			topics[topic.length + 1] = PUB_EVENT_TOPIC;
+			mPublisherRecord.setTopics(topics);
+		} else {
+			mPublisherRecord.setTopics(topic);
+		}
 	}
 	
 	/**
@@ -125,14 +149,24 @@ public class Publisher {
 	 *            Specifies topics of this publisher
 	 * @param publisherName
 	 *            Name of this publisher
+	 * @param supportRippleEvent
+	 *            true if this publisher will publish Ripple Events in XML
+	 *            format (see Event class for details}] , false if it will not
 	 */
 	public Publisher(String publisherURL, String dsURL, int dsPort, String[] topic,
-			String publisherName) {
+			String publisherName, boolean supportRippleEvent) {
 		mdsURL = dsURL;
 		REQUEST_PORT = dsPort;
 		mPublisherRecord.setPub_address(publisherURL);
 		mPublisherRecord.setPub_name(publisherName);
-		mPublisherRecord.setTopics(topic);
+		if (supportRippleEvent) {
+			String[] topics = new String[topic.length + 1];
+			System.arraycopy(topic, 0, topics, 0, topic.length);
+			topics[topic.length + 1] = PUB_EVENT_TOPIC;
+			mPublisherRecord.setTopics(topics);
+		} else {
+			mPublisherRecord.setTopics(topic);
+		};
 	}
 
 	/**

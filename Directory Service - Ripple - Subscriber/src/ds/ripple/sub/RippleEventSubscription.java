@@ -10,7 +10,7 @@ import ds.ripple.common.XML.Event;
 import ds.ripple.common.XML.XMLMessage;
 
 public class RippleEventSubscription {
-	private static final String PUB_EVENT_TOPIC = "EVENT";
+	protected static final String PUB_EVENT_TOPIC = "RippleEvent";
 	
 	private Socket mSocket;
 	private Context mContext;

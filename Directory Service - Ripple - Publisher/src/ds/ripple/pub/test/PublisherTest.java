@@ -40,7 +40,7 @@ public class PublisherTest {
 		System.out.println("Enter publisher name:");
 		String pubName = in.nextLine();
 		
-		Publisher pub = new Publisher(pubURL, dsURL, topic, pubName);
+		Publisher pub = new Publisher(pubURL, dsURL, topic, pubName, true);
 	
 		try {
 			pub.register();

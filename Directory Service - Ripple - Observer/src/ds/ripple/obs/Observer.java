@@ -137,7 +137,7 @@ public class Observer {
 	 * @author pawel
 	 * 
 	 */
-	class SubscriptionListener implements Runnable {
+	private class SubscriptionListener implements Runnable {
 
 		/**
 		 * Creates & opens a subscriber socket.
