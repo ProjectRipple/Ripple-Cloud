@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ds.ripple.common.PublisherRecord;
 import ds.ripple.pub.util.MessageBuilder;
@@ -18,7 +19,7 @@ public class Directory {
 	private HashMap<Integer, PublisherRecord> pubList = new HashMap<Integer, PublisherRecord>();
 
 	/* Map to store Unique Id and Url of the publishers */
-	private HashMap<Integer, String> pubURLs = new HashMap<Integer, String>();
+	private ConcurrentHashMap<Integer, String> pubURLs = new ConcurrentHashMap<Integer, String>();
 	
 	private HashSet<Integer> Pub_active=new HashSet<Integer>();
 
