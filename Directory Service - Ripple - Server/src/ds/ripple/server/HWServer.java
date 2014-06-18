@@ -34,15 +34,27 @@ public class HWServer {
 	private static final byte PUBLISHER_ALIVE = 0x05;
 	private static final byte OBSERVER_MAP_REQUEST = 0x03;
 	
+	/**
+	 * creates instance of HWServer class and creates server socket 
+	 * binds to local address on port 5555.
+	 * Also creates new instance for DirectoryPublisher 
+	 * class
+	 */
 	public HWServer() {
 		context = ZMQ.context(1);
 		responder = context.socket(ZMQ.REP);
 		responder.bind("tcp://*:5555");
-		dirPub = new DirectoryPublisher(context, dir);
+		dirPub = new DirectoryPublisher(context);
 		 
 	}
 	
-	
+	/**
+	 * starts new thread to receive requests
+	 * from clients on the port 5555
+	 * starts new timer for updating publisher list
+	 * checks for the type of request based on the 
+	 * first byte.
+	 */
 	
 	public void start() {
 		isRunning = true;
@@ -121,7 +133,7 @@ public class HWServer {
 							break;
 						case OBSERVER_MAP_REQUEST:
 							try {
-								responder.send(MessageBuilder.buildMsg(dir.getDirectoryList()), 0);
+								responder.send(MessageBuilder.buildMsg(Directory.getDirectoryList()), 0);
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -137,6 +149,11 @@ public class HWServer {
 		server.start();
 	}
 	
+	/**
+	 *closes the existing responder socket and
+	 *stops timer running for updating publisher list
+	 * closes the context.
+	 */
 	public void stop() {
 
 		responder.close();

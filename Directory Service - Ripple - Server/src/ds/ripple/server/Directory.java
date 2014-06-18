@@ -16,11 +16,12 @@ import ds.ripple.pub.util.MessageBuilder;
 public class Directory {
 
 	/* Map to store unique Id and publisher information */
-	private HashMap<Integer, PublisherRecord> pubList = new HashMap<Integer, PublisherRecord>();
+	private static HashMap<Integer, PublisherRecord> pubList = new HashMap<Integer, PublisherRecord>();
 
 	/* Map to store Unique Id and Url of the publishers */
 	private ConcurrentHashMap<Integer, String> pubURLs = new ConcurrentHashMap<Integer, String>();
 	
+	/* Map to store Unique Id of publishers which are alive */
 	private HashSet<Integer> Pub_active=new HashSet<Integer>();
 
 	protected static final int ERROR_URL_ALREADY_EXISTS = -1;
@@ -35,10 +36,14 @@ public class Directory {
 	private PublisherRecord tmpPubRecord;
 
 	/**
-	 * To check and validate the information of publisher before entry into
-	 * directory
+	 * To check and validate the information of publisher before its entry into
+	 * directory service
 	 * 
 	 * @param pub
+	 * publisher record object in byte code is passed to check legibility.
+	 * 
+	 * @return integer
+	 * 
 	 */
 	private int pubCheck(byte[] pub) {
 		ByteArrayInputStream in = new ByteArrayInputStream(pub);
@@ -58,6 +63,12 @@ public class Directory {
 		}
 	}
 
+	/**
+	 * To generate unique id in Integer for new publisher
+	 * 
+	 * @return Integer
+	 * 
+	 */
 	public Integer genUid() {
 		int uid;
 		boolean nxt = false;
@@ -74,7 +85,8 @@ public class Directory {
 	 * To register a publisher into the directory
 	 * 
 	 * @param pub
-	 * @return
+	 * 	 Publisher record in byte code for publisher registration
+	 * @return Integer
 	 */
 	public Integer pubisherRegistration(byte[] pub) {
 
@@ -89,10 +101,13 @@ public class Directory {
 	}
 
 	/**
-	 * To de-register a publisher from the directory
+	 * To de-register a publisher from the directory service
+	 * before the publisher stops.
 	 * 
 	 * @param ID
-	 * @return
+	 * 	Unique Id of publisher to de-register from directory service 
+	 * 
+	 * @return String
 	 */
 	public String publisherDeregistration(byte[] ID) {
 		try {
@@ -105,7 +120,7 @@ public class Directory {
 				return Integer.toString(ERROR_PUBLISHER_URL_NOT_FOUND);
 			}
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 			return Integer.toString(ERROR_PUBLISHER_URL_NOT_FOUND);
 		} 
@@ -116,6 +131,7 @@ public class Directory {
 	 * Check if the specified address is a valid numeric TCP/IP address
 	 * 
 	 * @param pubAddr
+	 *  Tcp address of Publisher that starts as new publisher. 
 	 *   
 	 * @return boolean
 	 */
@@ -144,19 +160,30 @@ public class Directory {
 	}
 
 	/**
+	 * This method is used to get list of publishers stored in directory service
+	 * 
 	 * @return HashMap<Integer, PublisherRecord>
+	 * 	list of publishers  in Hash Map with unique Id as keys and
+	 * Publisher Record as values
+	 * 
 	 */
-	public HashMap<Integer, PublisherRecord> getDirectoryList() {
+	public static HashMap<Integer, PublisherRecord> getDirectoryList() {
 		return pubList;
 	}
 
 	/**
+	 * updates the publisher information that is already stored in directory service
+	 * 
+	 * @param pub
+	 * publisher record in byte code for the update of the information
+	 * 
 	 * @return String
+	 * OK or error code
 	 */
-	public String updatePublisherInfo(byte[] msg) {
+	public String updatePublisherInfo(byte[] pub) {
 		try {
 			PublisherRecord pubRecord = (PublisherRecord) MessageBuilder
-					.deserialize(msg);
+					.deserialize(pub);
 			pubList.put(pubRecord.getPub_Id(), pubRecord);
 			pubURLs.put(pubRecord.getPub_Id(), pubRecord.getPub_address());
 			return "OK";
@@ -165,6 +192,17 @@ public class Directory {
 			return Integer.toString(ERROR_PUBLISHER_NOT_UPDATED);
 		} 
 	}
+	
+	/**
+	 * updates the list of active publishers with the publisher Id 
+	 * provided
+	 * 
+	 * @param msg
+	 * publisher record in byte code for which is active
+	 * 
+	 * @return int
+	 * 	publisher Id or error code
+	 */
 	
 	public int pubAlive(byte[] msg){
 		try {
@@ -179,6 +217,15 @@ public class Directory {
 			return ERROR_PUBLISHER_NOT_IN_DS;
 		} 
 	}
+	
+	/**
+	 * updates the directory service list with list of active publishers 
+	 * provided
+	
+	 * @return boolean
+	 * 	true if any updates or false
+	 * 
+	 */
 	
 	public boolean  updatePubAlive(){
 		Integer val;
