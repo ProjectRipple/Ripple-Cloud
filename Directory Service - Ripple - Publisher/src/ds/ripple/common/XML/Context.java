@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"producer", "timestamp", "location"})
 @XmlRootElement
 public final class Context {
-	private String producer;
+	private Producer producer;
 	private String timestamp;
 	private Location location;
 
@@ -16,11 +16,11 @@ public final class Context {
 	}
 	
 	@XmlElement
-	public String getProducer() {
+	public Producer getProducer() {
 		return producer;
 	}
 
-	protected void setProducer(String producer) {
+	protected void setProducer(Producer producer) {
 		this.producer = producer;
 	}
 

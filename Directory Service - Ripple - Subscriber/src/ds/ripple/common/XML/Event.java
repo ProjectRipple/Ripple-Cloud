@@ -104,9 +104,10 @@ public final class Event {
 	@Override
 	public String toString() {
 		StringWriter sw = new StringWriter();
-		sw.write("<event id=" + this.getId() + ">" + "\n");
+		sw.write("<event id=\"" + this.getId() + "\">" + "\n");
 		sw.write("\t<context>" + "\n");
-		sw.write("\t\t<producer>" + this.mContext.getProducer() + "</producer>"  + "\n");
+		sw.write("\t\t<producer type=\"" + this.mContext.getProducer().getType() + "\">\n");
+		sw.write("\t\t\t<id>" + this.mContext.getProducer().getProducerId() + "</id>\n");
 		sw.write("\t\t<timestamp>" + this.mContext.getTimestamp() + "</timestamp>"  + "\n");
 		sw.write("\t\t<location description=" + this.mContext.getLocation().getDescription() + ">"  + "\n");
 		sw.write("\t\t\t<longitude>" + this.mContext.getLocation().getLongitude() + "</longitude>"  + "\n");
@@ -116,7 +117,7 @@ public final class Event {
 		sw.write("\t</context>"  + "\n");
 		sw.write("\t<content>"  + "\n");
 		for (FeedItem fi : this.getContent().getList()) {
-			sw.write("\t\t<Item type=" + fi.getType() + " unit=" + fi.getUnit() + ">"  + "\n");
+			sw.write("\t\t<Item type=\"" + fi.getType() + "\" unit=\"" + fi.getUnit() + "\">"  + "\n");
 			for (String s : fi.getValues()) {
 				sw.write("\t\t\t<value>" + s + "</value>"  + "\n");
 			}

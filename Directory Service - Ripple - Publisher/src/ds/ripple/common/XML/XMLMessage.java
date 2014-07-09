@@ -12,6 +12,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import ds.ripple.common.XML.FeedItem.ItemType;
+import ds.ripple.common.XML.Producer.ProducerType;
 import ds.ripple.pub.exceptions.XMLMissingArgumentException;
 
 /**
@@ -134,7 +136,7 @@ public class XMLMessage {
 	 *            Serialized Event object
 	 * @return Event object
 	 */
-	public static Event unmarshallEventObject(byte[] bytes) {
+	protected static Event unmarshallEventObject(byte[] bytes) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Event.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -177,6 +179,7 @@ public class XMLMessage {
 		private Content content;
 		private Context context;
 		private Location location;
+		private Producer producer;
 
 		/**
 		 * Creates XMLMessageBuilder, takes one argument: ID of the event. The
@@ -196,6 +199,7 @@ public class XMLMessage {
 			this.content = new Content();
 			this.context = new Context();
 			this.location = new Location();
+			this.producer = new Producer();
 		}
 		
 		/**
@@ -205,8 +209,11 @@ public class XMLMessage {
 		 *            Name of the producer of Event
 		 * @return XMLMessageBuilder object
 		 */
-		public XMLMessageBuilder producer(String producer) {
-			this.context.setProducer(producer);
+		public XMLMessageBuilder producer(String producerId, ProducerType producerType) {
+			//this.context.setProducer(producer);
+			this.producer.setProducerId(producerId);
+			this.producer.setProducerType(producerType);
+			this.context.setProducer(this.producer);
 			return this;
 		}
 
@@ -291,7 +298,7 @@ public class XMLMessage {
 		 *            Value of feed item (ex. 36.6)
 		 * @return XMLMessageBuilder object
 		 */
-		public XMLMessageBuilder addContentSingleValue(String itemType, String itemUnit, String itemValue) {
+		public XMLMessageBuilder addContentSingleValue(ItemType itemType, String itemUnit, String itemValue) {
 			this.content.addItem(new FeedItem(itemType, itemValue, itemUnit));
 			return this;
 		}
@@ -308,9 +315,9 @@ public class XMLMessage {
 		 *            Values of feed item (ex. {value1}, {value2}, ...
 		 * @return XMLMessageBuilder object
 		 */
-		public XMLMessageBuilder addContentMultiValue(String itemType, String itemUnit, String[] itemValues) {
+		public XMLMessageBuilder addContentMultiValue(ItemType itemType, String itemUnit, String[] itemValues) {
 			FeedItem feedItem = new FeedItem();
-			feedItem.setType(itemType);
+			feedItem.setItemType(itemType);
 			feedItem.setUnit(itemUnit);
 			for (String s : itemValues) {
 				feedItem.addValue(s);
@@ -331,9 +338,9 @@ public class XMLMessage {
 		 *            Values of feed item (ex. {value1}, {value2}, ...
 		 * @return XMLMessageBuilder object
 		 */
-		public XMLMessageBuilder addContentMultiValue(String itemType, String itemUnit, Iterable<? extends String> itemValues) {
+		public XMLMessageBuilder addContentMultiValue(ItemType itemType, String itemUnit, Iterable<? extends String> itemValues) {
 			FeedItem feedItem = new FeedItem();
-			feedItem.setType(itemType);
+			feedItem.setItemType(itemType);
 			feedItem.setUnit(itemUnit);
 			for (String s : itemValues) {
 				feedItem.addValue(s);
@@ -370,8 +377,8 @@ public class XMLMessage {
 			if (this.event.getId() == null || this.event.getId().equals("")) {
 				throw new XMLMissingArgumentException("Event ID cannot be empty");
 			}
-			if (this.event.getContext().getProducer() == null || this.event.getContext().getProducer().equals("")) {
-				throw new XMLMissingArgumentException("Event must have a producer name");
+			if (!this.event.getContext().getProducer().hasIdAndType()) {
+				throw new XMLMissingArgumentException("Event must have a producer id, and type");
 			}
 			if (this.event.getContext().getTimestamp() == null || this.event.getContext().getProducer().equals("")) {
 				throw new XMLMissingArgumentException("Event must have a timestamp");

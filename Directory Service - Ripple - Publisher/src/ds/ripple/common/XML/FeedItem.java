@@ -8,39 +8,81 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public final class FeedItem {
+	//private String type;
+	private ItemType itemType;
 	private String type;
 	private ArrayList<String> values;
 	private String unit;
 
+	public enum ItemType {
+		// responder's information - TBD
+		// patient's information
+		TEMPERATURE("temperature"),
+		BLOOD_PRESSURE("bloodPressure"),
+		RESPIRATION_RATE("respirationRate"),
+		HEART_RATE("heartRate"),
+		AGE("age"),
+		O2_SATURATION("saturationO2"),
+		PATIENT_FIRST_NAME("firstName"),
+		PAITENT_LAST_NAME("lastName"),
+		ECG("ecg"),
+		// cloudlet information
+		CLOUDLET_REGISTRATION_MSG("cloudletRegistrationMessage"),
+		CLOUDLET_DEREGISTRATION_MSG("cloudletDeregistrationMessage");
+		
+		private String itemType;
+		
+		private ItemType(final String itemType) {
+			this.itemType = itemType;
+		}
+		
+		@Override
+		public String toString() {
+			return this.itemType;
+		}
+	}
+	
 	protected FeedItem() {
 		this.values = new ArrayList<String>();
 	}
 	
-	protected FeedItem(String type, String value) {
-		this.type = type;
+	protected FeedItem(ItemType type, String value) {
+		this.itemType = type;
+		setType(type.toString());
 		this.values = new ArrayList<String>();
 		this.values.add(value);
 	}
 	
-	protected FeedItem(String type, String value, String unit) {
-		this.type = type;
+	protected FeedItem(ItemType type, String value, String unit) {
+		this.itemType = type;
+		setType(type.toString());
 		this.values = new ArrayList<String>();
 		this.values.add(value);
 		this.unit = unit;
 	}
 	
-	protected FeedItem(String type, ArrayList<String> values, String unit) {
-		this.type = type;
+	protected FeedItem(ItemType type, ArrayList<String> values, String unit) {
+		this.itemType = type;
+		setType(type.toString());
 		this.values = new ArrayList<String>(values);
 		this.unit = unit;
+	}
+	
+	public ItemType getItemType() {
+		return itemType;
+	}
+
+	protected void setItemType(ItemType type) {
+		this.itemType = type;
+		setType(type.toString());
 	}
 	
 	@XmlAttribute
 	public String getType() {
 		return type;
 	}
-
-	protected void setType(String type) {
+	
+	private void setType(String type) {
 		this.type = type;
 	}
 	

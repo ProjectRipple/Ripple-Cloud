@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Scanner;
 
 import ds.ripple.common.XML.XMLMessage;
+import ds.ripple.common.XML.FeedItem.ItemType;
+import ds.ripple.common.XML.Producer.ProducerType;
 import ds.ripple.common.XML.XMLMessage.XMLMessageBuilder;
 import ds.ripple.pub.Publisher;
 import ds.ripple.pub.exceptions.TopicNotRegisteredException;
@@ -111,8 +113,9 @@ public class PublisherTest {
 		System.out.println("Enter Event ID");
 		String eventId = in.nextLine();
 		String date = new Date().toString();
-		System.out.println("Enter the name of producer of the event:");
-		String producer = in.nextLine();
+		System.out.println("Enter the ID of producer of the event:");
+		String producerId = in.nextLine();
+		System.out.println("The producer type was hardcoded to <" + ProducerType.PATIENT.toString() + ">");
 		System.out.println("Location of the event:");
 		System.out.println("\tlongitude:");
 		String longitude = in.nextLine();
@@ -129,7 +132,7 @@ public class PublisherTest {
 		String input;
 		boolean stop = false;
 		do {
-			System.out.println("\tFeed item type");
+			System.out.println("\tFeed item type (temperature, bloodPressure, or ecg)");
 			input = in.nextLine();
 			if (input.equals("done")) {
 				stop = true;
@@ -143,11 +146,20 @@ public class PublisherTest {
 			value.add(in.nextLine());
 		} while (!stop);
 		XMLMessageBuilder builder = new XMLMessageBuilder(eventId)
-			.producer(producer)
+			.producer(producerId, ProducerType.PATIENT)
 			.timestamp(date)
 			.location(longitude, latitude, altitude, description);
 		for (int i=0 ; i < type.size() ; i++) {
-			builder.addContentSingleValue(type.get(i), unit.get(i), value.get(i));
+			if (type.get(i).equals(ItemType.TEMPERATURE.toString()))
+				builder.addContentSingleValue(ItemType.TEMPERATURE, unit.get(i), value.get(i));
+			else if (type.get(i).equals(ItemType.BLOOD_PRESSURE.toString()))
+				builder.addContentSingleValue(ItemType.BLOOD_PRESSURE, unit.get(i), value.get(i));
+			else if (type.get(i).equals(ItemType.ECG.toString()))
+				builder.addContentSingleValue(ItemType.ECG, unit.get(i), value.get(i));
+			else {
+				System.out.println("Unrecongized item type, aborting...");
+				return;
+			}
 		}
 		XMLMessage msg = null;
 		try {
