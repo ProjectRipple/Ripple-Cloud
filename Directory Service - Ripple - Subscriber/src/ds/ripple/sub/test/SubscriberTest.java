@@ -22,6 +22,8 @@ public class SubscriberTest {
 		String dsURL = in.nextLine();
 		
 		
+		// test comment
+		
 		Subscriber subscriber = new Subscriber(dsURL, new MyPublisherListListener());
 		
 		
