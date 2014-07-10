@@ -26,6 +26,7 @@ public final class FeedItem {
 		PATIENT_FIRST_NAME("firstName"),
 		PAITENT_LAST_NAME("lastName"),
 		ECG("ecg"),
+		CLOUDLETID("cloudLetID"),
 		// cloudlet information
 		CLOUDLET_REGISTRATION_MSG("cloudletRegistrationMessage"),
 		CLOUDLET_DEREGISTRATION_MSG("cloudletDeregistrationMessage");
