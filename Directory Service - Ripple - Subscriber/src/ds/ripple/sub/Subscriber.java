@@ -42,7 +42,6 @@ public class Subscriber {
 		mPubList = new PublisherList();
 		mContext = ZMQ.context(1);
 		mObserver = new Observer(dsURL, new PublisherMapListener()); 
-		mObserver.connect();
 	}
 	
 	public Subscriber(String dsURL, PublisherListListener pubListListener) {
@@ -51,6 +50,9 @@ public class Subscriber {
 		mPubListListener = pubListListener;
 		mContext = ZMQ.context(1);
 		mObserver = new Observer(dsURL, new PublisherMapListener());
+	}
+	
+	public void connect() {
 		mObserver.connect();
 	}
 	

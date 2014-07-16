@@ -24,7 +24,7 @@ public class SubscriberTest {
 		
 		
 		Subscriber subscriber = new Subscriber(dsURL, new MyPublisherListListener());
-		
+		subscriber.connect();
 		
 		String cmd;
 		do {
