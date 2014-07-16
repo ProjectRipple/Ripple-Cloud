@@ -3,6 +3,7 @@ package ds.ripple.sub.test;
 import java.util.Scanner;
 
 import ds.ripple.common.XML.Event;
+import ds.ripple.sub.Publisher;
 import ds.ripple.sub.PublisherList;
 import ds.ripple.sub.PublisherListListener;
 import ds.ripple.sub.RippleEventListener;

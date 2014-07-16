@@ -104,16 +104,18 @@ public final class Event {
 	@Override
 	public String toString() {
 		StringWriter sw = new StringWriter();
+		sw.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 		sw.write("<event id=\"" + this.getId() + "\">" + "\n");
 		sw.write("\t<context>" + "\n");
 		sw.write("\t\t<producer type=\"" + this.mContext.getProducer().getType() + "\">\n");
 		sw.write("\t\t\t<id>" + this.mContext.getProducer().getProducerId() + "</id>\n");
+		sw.write("\t\t</producer>\n");
 		sw.write("\t\t<timestamp>" + this.mContext.getTimestamp() + "</timestamp>"  + "\n");
-		sw.write("\t\t<location description=" + this.mContext.getLocation().getDescription() + ">"  + "\n");
+		sw.write("\t\t<location description=\"" + this.mContext.getLocation().getDescription() + "\">"  + "\n");
 		sw.write("\t\t\t<longitude>" + this.mContext.getLocation().getLongitude() + "</longitude>"  + "\n");
 		sw.write("\t\t\t<latitude>" + this.mContext.getLocation().getLatitude() + "</latitude>"  + "\n");
 		sw.write("\t\t\t<altitude>" + this.mContext.getLocation().getAltitude() + "</altitude>"  + "\n");
-		sw.write("\t\t</location"  + "\n");
+		sw.write("\t\t</location>"  + "\n");
 		sw.write("\t</context>"  + "\n");
 		sw.write("\t<content>"  + "\n");
 		for (FeedItem fi : this.getContent().getList()) {
@@ -124,7 +126,7 @@ public final class Event {
 			sw.write("\t\t</Item>" + "\n");
 		}
 		sw.write("\t</content>" + "\n");
-		sw.write("</event" + "\n");
+		sw.write("</event>" + "\n");
 		return sw.toString();
 	}
 }
