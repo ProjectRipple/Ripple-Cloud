@@ -181,7 +181,7 @@ public class Publisher {
 		mContext = ZMQ.context(1);
 		mPubSocket = mContext.socket(ZMQ.PUB);
 		int port = mPubSocket.bindToRandomPort(mPublisherRecord.getPub_address());
-		mPublisherRecord.setPub_address(mdsURL + ":" + port);
+		mPublisherRecord.setPub_address(mPublisherRecord.getPub_address() + ":" + port);
 		
 		mReqSocket = mContext.socket(ZMQ.REQ);
 		mReqSocket.connect(mdsURL + ":" + REQUEST_PORT);
