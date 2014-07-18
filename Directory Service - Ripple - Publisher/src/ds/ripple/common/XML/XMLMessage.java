@@ -228,9 +228,12 @@ public class XMLMessage {
 			this.context.setTimestamp(timestamp);
 			return this;
 		}
-		
+
 		/**
 		 * Sets location of Event
+		 * 
+		 * @deprecated reason: James didn't like it, use
+		 *             {@link #location(double, double)} instead
 		 * 
 		 * @param longitude
 		 *            Longitude of Event
@@ -238,6 +241,7 @@ public class XMLMessage {
 		 *            Latitude of Event
 		 * @return XMLMessageBuilder object
 		 */
+		@Deprecated
 		public XMLMessageBuilder location(String longitude, String latitude) {
 			this.location.setLongitude(longitude);
 			this.location.setLatitude(latitude);
@@ -252,11 +256,50 @@ public class XMLMessage {
 		 *            Longitude of Event
 		 * @param latitude
 		 *            Latitude of Event
-		 * @param description
-		 *            Location description of Event
 		 * @return XMLMessageBuilder object
 		 */
-        public XMLMessageBuilder location(String longitude, String latitude, String description) {
+		public XMLMessageBuilder location(double latitude, double longitude) {
+			this.location.setLatitude(latitude + "");
+			this.location.setLongitude(longitude + "");
+			this.context.setLocation(this.location);
+			return this;
+		}
+		
+		/**
+		 * Sets location of Event
+		 * 
+		 * @param longitude
+		 *            Longitude of Event
+		 * @param latitude
+		 *            Latitude of Event
+		 * @param altitude
+		 *            Altitude of Event
+		 * @return XMLMessageBuilder object
+		 */
+		public XMLMessageBuilder location(double latitude, double longitude, double altitude) {
+			this.location.setLatitude(latitude + "");
+			this.location.setLongitude(longitude + "");
+			this.location.setAltitude(altitude + "");
+			this.context.setLocation(this.location);
+			return this;
+		}
+		
+		/**
+		 * Sets location of Event
+		 * 
+		 * @deprecated reason: James didn't like it, use
+		 *             {@link #location(double, double, String)} instead
+		 * 
+		 * @param longitude
+		 *            Longitude of Event
+		 * @param latitude
+		 *            Latitude of Event
+		 * @param description
+		 *            Description of location
+		 * @return XMLMessageBuilder object
+		 */
+		@Deprecated
+		public XMLMessageBuilder location(String longitude, String latitude, String description) {
 			this.location.setLongitude(longitude);
 			this.location.setLatitude(latitude);
 			this.location.setDescription(description);
@@ -264,7 +307,51 @@ public class XMLMessage {
 			return this;
 		}
 		
+        /**
+		 * Sets location of Event
+		 * 
+		 * @param longitude
+		 *            Longitude of Event
+		 * @param latitude
+		 *            Latitude of Event
+		 * @param description
+		 *            Description of location
+		 * @return XMLMessageBuilder object
+		 */
+        public XMLMessageBuilder location(double latitude, double longitude, String description) {
+        	this.location.setLatitude(latitude + "");
+        	this.location.setLongitude(longitude + "");
+        	this.location.setDescription(description);
+        	this.context.setLocation(this.location);
+        	return this;
+        }
 
+		/**
+		 * Sets location of Event
+		 * 
+		 * @deprecated reason: James didn't like it, use
+		 *             {@link #location(double, double, double, String)} instead
+		 * 
+		 * @param longitude
+		 *            Longitude of Event
+		 * @param latitude
+		 *            Latitude of Event
+		 * @param altitude
+		 *            Altitude of Event
+		 * @param description
+		 *            Description of location
+		 * @return XMLMessageBuilder object
+		 */
+        @Deprecated
+		public XMLMessageBuilder location(String longitude, String latitude, String altitude, String description) {
+			this.location.setLongitude(longitude);
+			this.location.setLatitude(latitude);
+			this.location.setAltitude(altitude);
+			this.location.setDescription(description);
+			this.context.setLocation(this.location);
+			return this;
+		}
+		
 		/**
 		 * Sets location of Event
 		 * 
@@ -275,13 +362,13 @@ public class XMLMessage {
 		 * @param altitude
 		 *            Altitude of Event
 		 * @param description
-		 *            Location description of Event
+		 *            Description of location
 		 * @return XMLMessageBuilder object
 		 */
-		public XMLMessageBuilder location(String longitude, String latitude, String altitude, String description) {
-			this.location.setLongitude(longitude);
-			this.location.setLatitude(latitude);
-			this.location.setAltitude(altitude);
+		public XMLMessageBuilder location(double latitude, double longitude, double altitude, String description) {
+			this.location.setLongitude(longitude + "");
+			this.location.setLatitude(latitude + "");
+			this.location.setAltitude(altitude + "");
 			this.location.setDescription(description);
 			this.context.setLocation(this.location);
 			return this;

@@ -350,4 +350,14 @@ public class Publisher {
 	public String[] getTopics() {
 		return Arrays.copyOf(mPublisherRecord.getTopics(), mPublisherRecord.getTopics().length);
 	}
+	
+	/**
+	 * Returns a boolean value that indicated whether this publisher is
+	 * registered at the Directory Services Server.
+	 * 
+	 * @return boolean
+	 */
+	public boolean isRegistered() {
+		return this.isRegistered;
+	}
 }
