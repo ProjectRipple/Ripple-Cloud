@@ -355,7 +355,7 @@ public class Publisher {
 	 * Returns a boolean value that indicated whether this publisher is
 	 * registered at the Directory Services Server.
 	 * 
-	 * @return boolean
+	 * @return 
 	 */
 	public boolean isRegistered() {
 		return this.isRegistered;
