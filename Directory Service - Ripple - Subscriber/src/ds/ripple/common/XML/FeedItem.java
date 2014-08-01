@@ -30,6 +30,11 @@ public final class FeedItem {
 		NOTE_IMG_FRONT_LEFT_ARM("NOTE_IMG_FRONT_LEFT_ARM"),
 		NOTE_IMG_FRONT_RIGHT_LEG("NOTE_IMG_FRONT_RIGHT_LEG"),
 		NOTE_IMG_FRONT_LEFT_LEG("NOTE_IMG_FRONT_LEFT_LEG"),
+		PATIENT_NBC_STATUS("patientNBC"),
+		// for now, please use only "red", "green", or "yellow"
+		// TODO: fix colors (hard-code it to something, don't let API user put anything he wants as color
+		PATIENT_TRIAGE_COLOR("patientTriage"),
+		PATIENT_STATUS_DESCRIPTION("patientStatus"),
 		PATIENT_ID("patientID"),
 		
 		// patient's information
@@ -43,7 +48,6 @@ public final class FeedItem {
 		PAITENT_LAST_NAME("lastName"),
 		ECG("ecg"),
 		CLOUDLETID("cloudLetID"),
-		
 		// cloudlet information
 		CLOUDLET_PATIENTID_LIST("patientList"),
 		CLOUDLET_REGISTRATION_MSG("cloudletRegistrationMessage"),
