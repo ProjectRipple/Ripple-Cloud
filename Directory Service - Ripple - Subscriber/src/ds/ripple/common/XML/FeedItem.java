@@ -88,6 +88,13 @@ public final class FeedItem {
 	}
 	
 	public ItemType getItemType() {
+		if (this.itemType == null || !this.itemType.toString().equals(this.type)) {
+			for (ItemType type : ItemType.values()) {
+				if (type.toString().equals(this.type)) {
+					this.itemType = type;
+				}
+			}
+		}
 		return itemType;
 	}
 

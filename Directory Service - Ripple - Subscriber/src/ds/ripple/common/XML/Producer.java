@@ -37,7 +37,7 @@ public final class Producer {
 	}
 	
 	@XmlAttribute(name="type")
-	public String getType() {
+	public String getType() {	
 		return type;
 	}
 	
@@ -46,6 +46,13 @@ public final class Producer {
 	}
 	
 	public ProducerType getProducerType() {
+		if (this.producerType == null || !this.producerType.toString().equals(this.type)){
+			for(ProducerType type : ProducerType.values()){
+				if(type.toString().equals(this.type)){
+					this.producerType = type;
+				}
+			}
+		}
 		return producerType;
 	}
 	

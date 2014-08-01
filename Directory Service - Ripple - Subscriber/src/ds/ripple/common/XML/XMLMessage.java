@@ -136,7 +136,7 @@ public class XMLMessage {
 	 *            Serialized Event object
 	 * @return Event object
 	 */
-	protected static Event unmarshallEventObject(byte[] bytes) {
+	public static Event unmarshallEventObject(byte[] bytes) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(Event.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
