@@ -36,6 +36,7 @@ public final class FeedItem {
 		PATIENT_TRIAGE_COLOR("patientTriage"),
 		PATIENT_STATUS_DESCRIPTION("patientStatus"),
 		PATIENT_ID("patientID"),
+		PATIENT_SEX("sex"),
 		
 		// patient's information
 		TEMPERATURE("temperature"),
