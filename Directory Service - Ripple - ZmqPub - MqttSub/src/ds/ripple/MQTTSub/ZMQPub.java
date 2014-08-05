@@ -91,7 +91,7 @@ public class ZMQPub extends MqttSubcriber {
 	@Override
 	public void messageArrived(String topic, MqttMessage message) {
 
-		 System.out.println(message);
+		 // System.out.println(message);
 		if (registered) {
 
 			if (topic.toLowerCase().contains("p_stats")
@@ -144,7 +144,7 @@ public class ZMQPub extends MqttSubcriber {
 							"fahrenheit", checkNotNull(json.get("temp")))
 					.addContentSingleValue(FeedItem.ItemType.O2_SATURATION,
 							"mg/l", checkNotNull(json.get("sp02")));
-			// System.out.println("published:" + xmlMsg);
+			// // System.out.println("published:" + xmlMsg);
 			xmlMsg = builder.build();
 			pub.publish(xmlMsg);
 
@@ -191,7 +191,7 @@ public class ZMQPub extends MqttSubcriber {
 					Double.parseDouble(checkNotNull(locat.get("lat"))),
 					Double.parseDouble(checkNotNull(locat.get("lng"))),
 					Double.parseDouble(checkNotNull(locat.get("alt"))));
-			// System.out.println("published:" + xmlMsg);
+			// // System.out.println("published:" + xmlMsg);
 			xmlMsg = builder.build();
 			pub.publish(xmlMsg);
 
@@ -279,7 +279,7 @@ public class ZMQPub extends MqttSubcriber {
 					Double.parseDouble(checkNotNull(locat.get("alt"))));
 
 			xmlMsg = builder.build();
-			System.out.println("published:" + xmlMsg);
+			// System.out.println("published:" + xmlMsg);
 			pub.publish(xmlMsg);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -330,7 +330,7 @@ public class ZMQPub extends MqttSubcriber {
 							"N/A", checkNotNull(json.get("status")));
 			builder.location(
 					0,0,0);
-			// System.out.println("published:" + xmlMsg);
+			// // System.out.println("published:" + xmlMsg);
 			xmlMsg = builder.build();
 			pub.publish(xmlMsg);
 
@@ -366,7 +366,7 @@ public class ZMQPub extends MqttSubcriber {
 						Integer.toString(convert2BytesToUInt(new byte[] {
 								streamByte[i], streamByte[++i] })));
 			}
-			System.out.println("published:" + xmlMsg);
+			// System.out.println("published:" + xmlMsg);
 			xmlMsg = builder.build();
 			pub.publish(xmlMsg);
 		} catch (Exception e) {
