@@ -1,7 +1,9 @@
 package ds.ripple.MQTTSub;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +19,7 @@ import ds.ripple.common.XML.Producer.ProducerType;
 import ds.ripple.common.XML.XMLMessage;
 import ds.ripple.common.XML.XMLMessage.XMLMessageBuilder;
 import ds.ripple.pub.Publisher;
+import ds.ripple.pub.exceptions.TopicNotRegisteredException;
 import ds.ripple.pub.exceptions.URLAlreadyExistsException;
 import ds.ripple.pub.exceptions.URLParsingException;
 
@@ -24,19 +27,19 @@ public class ZMQPub extends MqttSubcriber {
 	Publisher pub;
 	XMLMessage xmlMsg;
 	Date date;
-	SimpleDateFormat sdf;
+	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 	boolean registered = false;
 
 	public ZMQPub(String brokerUrl, String publisherURL, String dsURL,
 			String topic, String publisherName) {
 		pub = new Publisher(publisherURL, dsURL, topic, publisherName, true);
+
 		BROKER_URL = brokerUrl;
 	}
 
 	/**
 	 * 
-	 * To start publisher, register in directory service and start mqtt
-	 * client
+	 * To start publisher, register in directory service and start mqtt client
 	 */
 	public void startPub() throws URLAlreadyExistsException,
 			URLParsingException {
@@ -91,9 +94,9 @@ public class ZMQPub extends MqttSubcriber {
 	@Override
 	public void messageArrived(String topic, MqttMessage message) {
 
-		 // System.out.println(message);
+		// System.out.println(message);
 		if (registered) {
-
+			publishJSON(message);
 			if (topic.toLowerCase().contains("p_stats")
 					&& topic.toLowerCase().contains("vitalcast")) {
 				parseVitalCast(message);
@@ -113,6 +116,14 @@ public class ZMQPub extends MqttSubcriber {
 		}
 	}
 
+	public void publishJSON(MqttMessage message) {
+		try {
+			pub.publish(pub.getTopics()[0], new String(message.getPayload()));
+		} catch (TopicNotRegisteredException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Constructs XMLMessage from mqtt message received from Mqtt broker
 	 * published on topic “P_Stats/src/vitalcast”
@@ -126,7 +137,7 @@ public class ZMQPub extends MqttSubcriber {
 
 		try {
 			date = new Date();
-			sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+			
 			String obj = new String(message.getPayload());
 			json = (JSONObject) new JSONParser().parse(obj);
 			XMLMessageBuilder builder = new XMLMessageBuilder(
@@ -175,13 +186,14 @@ public class ZMQPub extends MqttSubcriber {
 			if (json.containsKey("patients")) {
 				JSONArray patientList = (JSONArray) json.get("patients");
 				Iterator patientItr = patientList.iterator();
-				ArrayList<String> ptnlst= new ArrayList<String>();
+				ArrayList<String> ptnlst = new ArrayList<String>();
 				while (patientItr.hasNext()) {
 					JSONObject patient = (JSONObject) patientItr.next();
 					ptnlst.add(checkNotNull(patient.get("id")));
 				}
-				builder.addContentMultiValue(FeedItem.ItemType.CLOUDLET_PATIENTID_LIST,
-						"N/A", ptnlst);
+				builder.addContentMultiValue(
+						FeedItem.ItemType.CLOUDLET_PATIENTID_LIST, "N/A",
+						ptnlst);
 			}
 
 			// builder.addContentMultiValue(FeedItem.ItemType.ECG, " ",
@@ -302,19 +314,17 @@ public class ZMQPub extends MqttSubcriber {
 			String obj = new String(message.getPayload());
 			json = (JSONObject) new JSONParser().parse(obj);
 			String[] name = json.get("name").toString().split(" ");
+			//System.out.println("name :" + Arrays.toString(name));
 			XMLMessageBuilder builder = new XMLMessageBuilder(
 					checkNotNull(json.get("date")))
 					.producer(checkNotNull(json.get("rid")),
 							ProducerType.RESPONDER)
 					.timestamp(checkNotNull(json.get("date")))
+
 					.addContentSingleValue(FeedItem.ItemType.PATIENT_ID, "N/A",
 							checkNotNull(json.get("pid")))
-					.addContentSingleValue(
-							FeedItem.ItemType.PATIENT_FIRST_NAME, "N/A",
-							checkNotNull(name[1]))
-					.addContentSingleValue(
-							FeedItem.ItemType.PAITENT_LAST_NAME, "N/A",
-							checkNotNull(name[0]))
+					.addContentSingleValue(FeedItem.ItemType.PAITENT_LAST_NAME,
+							"N/A", checkNotNull(name[0]))
 					.addContentSingleValue(FeedItem.ItemType.AGE, "N/A",
 							checkNotNull(json.get("age")))
 					.addContentSingleValue(FeedItem.ItemType.PATIENT_SEX,
@@ -328,10 +338,16 @@ public class ZMQPub extends MqttSubcriber {
 					.addContentSingleValue(
 							FeedItem.ItemType.PATIENT_STATUS_DESCRIPTION,
 							"N/A", checkNotNull(json.get("status")));
-			builder.location(
-					0,0,0);
-			// // System.out.println("published:" + xmlMsg);
+			if (name.length == 2) {
+				builder.addContentSingleValue(
+						FeedItem.ItemType.PATIENT_FIRST_NAME, "N/A",
+						checkNotNull(name[1]));
+			}
+
+			builder.location(0, 0, 0);
+		
 			xmlMsg = builder.build();
+			//System.out.println("published:" + xmlMsg);
 			pub.publish(xmlMsg);
 
 		} catch (Exception e) {
@@ -354,7 +370,7 @@ public class ZMQPub extends MqttSubcriber {
 		String[] topicParts = topic.split("/");
 		try {
 			XMLMessageBuilder builder = new XMLMessageBuilder("Ecg data")
-					.producer(topicParts[1], ProducerType.PATIENT);
+					.producer(checkNotNull(topicParts[1]), ProducerType.PATIENT);
 
 			String stream = new String(message.getPayload());
 			byte[] streamByte = hexStringToByteArray(stream);
@@ -367,6 +383,9 @@ public class ZMQPub extends MqttSubcriber {
 								streamByte[i], streamByte[++i] })));
 			}
 			// System.out.println("published:" + xmlMsg);
+			builder.timestamp(sdf.format(date));
+			builder.location(0, 0, 0);
+
 			xmlMsg = builder.build();
 			pub.publish(xmlMsg);
 		} catch (Exception e) {
