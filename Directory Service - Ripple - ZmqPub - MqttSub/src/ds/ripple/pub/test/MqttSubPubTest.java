@@ -16,17 +16,15 @@ public class MqttSubPubTest {
 		String pubURL = in.nextLine();
 		System.out.println("Enter Directory Services URL (ex: tcp://192.168.0.11):");
 		String dsURL = in.nextLine();
-		System.out.println("Enter a topic:");
-		String topic = in.nextLine();
 		System.out.println("Enter publisher name:");
 		String pubName = in.nextLine();
-		ZMQPub mqttSubPub = new ZMQPub(MqttUrl,pubURL, dsURL, topic, pubName);
+		ZMQPub mqttSubPub = new ZMQPub(MqttUrl,pubURL, dsURL,pubName);
 			try {
 				mqttSubPub.startPub();
 				System.out.println("Press enter to stop...");
-				in.nextLine();
-				mqttSubPub.stopPub();
 				in.close();
+				//mqttSubPub.stopPub();
+			//	in.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
