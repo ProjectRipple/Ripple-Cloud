@@ -126,7 +126,7 @@ public class Publisher {
 		if (supportRippleEvent) {
 			String[] topics = new String[topic.length + 1];
 			System.arraycopy(topic, 0, topics, 0, topic.length);
-			topics[topic.length + 1] = PUB_EVENT_TOPIC;
+			topics[topic.length] = PUB_EVENT_TOPIC;
 			mPublisherRecord.setTopics(topics);
 		} else {
 			mPublisherRecord.setTopics(topic);
@@ -162,7 +162,7 @@ public class Publisher {
 		if (supportRippleEvent) {
 			String[] topics = new String[topic.length + 1];
 			System.arraycopy(topic, 0, topics, 0, topic.length);
-			topics[topic.length + 1] = PUB_EVENT_TOPIC;
+			topics[topic.length] = PUB_EVENT_TOPIC;
 			mPublisherRecord.setTopics(topics);
 		} else {
 			mPublisherRecord.setTopics(topic);

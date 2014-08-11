@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Scanner;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.simple.JSONArray;
@@ -31,8 +32,10 @@ public class ZMQPub extends MqttSubcriber {
 	boolean registered = false;
 
 	public ZMQPub(String brokerUrl, String publisherURL, String dsURL,
-			String topic, String publisherName) {
-		pub = new Publisher(publisherURL, dsURL, topic, publisherName, true);
+			 String publisherName) {
+		String[] topics = { "p_stats_vitalcast", "p_stats_info", "p_stream", "c_status",
+				"r_status", "p_action","unknown" };
+		pub = new Publisher(publisherURL, dsURL, topics, publisherName, true);
 
 		BROKER_URL = brokerUrl;
 	}
@@ -96,29 +99,39 @@ public class ZMQPub extends MqttSubcriber {
 
 		// System.out.println(message);
 		if (registered) {
-			publishJSON(message);
+			
 			if (topic.toLowerCase().contains("p_stats")
 					&& topic.toLowerCase().contains("vitalcast")) {
 				parseVitalCast(message);
+				publishJSON("p_stats_vitalcast", message);
 			} else if (topic.toLowerCase().contains("p_stats")
 					&& topic.toLowerCase().contains("info")) {
 				parsePatientInfo(message);
+				publishJSON("p_stats_info", message);
 			} else if (topic.toLowerCase().contains("p_stream")) {
 				parseStream(topic, message);
+				publishJSON("p_stream", message);
 			} else if (topic.toLowerCase().contains("c_status")) {
 				parseCloudletMsg(message);
+				publishJSON("c_status", message);
 			} else if (topic.toLowerCase().contains("r_status")) {
 				// parseCloudletMsg(message);
+				publishJSON("r_status", message);
 			} else if (topic.toLowerCase().contains("p_action")) {
 				parseAction(message);
+				publishJSON("p_action", message);
+			}else{
+				publishJSON("unknown", message);
 			}
 
 		}
 	}
 
-	public void publishJSON(MqttMessage message) {
-		try {
-			pub.publish(pub.getTopics()[0], new String(message.getPayload()));
+	public void publishJSON(String topic, MqttMessage message) {
+		try {		
+			String msg= new String(message.getPayload());
+			System.out.println(msg);
+			pub.publish(topic,msg);
 		} catch (TopicNotRegisteredException | IOException e) {
 			e.printStackTrace();
 		}
@@ -137,7 +150,7 @@ public class ZMQPub extends MqttSubcriber {
 
 		try {
 			date = new Date();
-			
+
 			String obj = new String(message.getPayload());
 			json = (JSONObject) new JSONParser().parse(obj);
 			XMLMessageBuilder builder = new XMLMessageBuilder(
@@ -314,7 +327,7 @@ public class ZMQPub extends MqttSubcriber {
 			String obj = new String(message.getPayload());
 			json = (JSONObject) new JSONParser().parse(obj);
 			String[] name = json.get("name").toString().split(" ");
-			//System.out.println("name :" + Arrays.toString(name));
+			// System.out.println("name :" + Arrays.toString(name));
 			XMLMessageBuilder builder = new XMLMessageBuilder(
 					checkNotNull(json.get("date")))
 					.producer(checkNotNull(json.get("rid")),
@@ -345,9 +358,9 @@ public class ZMQPub extends MqttSubcriber {
 			}
 
 			builder.location(0, 0, 0);
-		
+
 			xmlMsg = builder.build();
-			//System.out.println("published:" + xmlMsg);
+			// System.out.println("published:" + xmlMsg);
 			pub.publish(xmlMsg);
 
 		} catch (Exception e) {
