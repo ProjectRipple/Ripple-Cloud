@@ -12,6 +12,9 @@ lib/
 local.properties
 .loadpath
 
+# temp lock files created by mqtt
+MQTTsub*/
+
 # External tool builders
 .externalToolBuilders/
 
