@@ -15,6 +15,13 @@ public class DBPersist {
 		dbobj = db;
 	}
 
+	/**
+	 * checks for the existence of the mentioned DBname 
+	 * in connected DB. 
+	 * @param topic,data
+	 * 
+	 * 
+	 */
 	public void stringData(String topic, String data) {
 		/*
 		 * Map<String, Object> msgDoc = new HashMap<String, Object>();
@@ -59,6 +66,13 @@ public class DBPersist {
 		}
 
 	}
+	/**
+	 * checks for the string if it is JSON
+	 * @param str
+	 * 
+	 * @return boolean
+	 * 
+	 */
 	private boolean isJson(String str){
 		try {
 	        JSON.parse(str);

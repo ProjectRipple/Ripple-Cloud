@@ -1,18 +1,16 @@
 package ds.ripple.mongo;
 
 import java.net.UnknownHostException;
-import java.util.Scanner;
 
-import ds.ripple.common.XML.Event;
 import ds.ripple.mongo.exceptions.IncorrectDBName;
 import ds.ripple.sub.Publisher;
 import ds.ripple.sub.PublisherList;
 import ds.ripple.sub.PublisherListListener;
-import ds.ripple.sub.RippleEventListener;
 import ds.ripple.sub.Subscriber;
 import ds.ripple.sub.SubscriptionListener;
 import ds.ripple.sub.exceptions.InvalidTopicException;
 import ds.ripple.sub.exceptions.InvalidURLException;
+
 
 
 public class SubMongo {
@@ -28,7 +26,15 @@ public class SubMongo {
 		db = new DBconnect(hostaddress, port, "ripple");
 		dbPersist = new DBPersist(db.getDb());
 	}
-
+	
+	/**
+	 * subscribes to all the topics from the available 
+	 * publishers except to ripple event
+	 * 
+	 * @param publist
+	 * 
+	 * 
+	 */
 	private static void subscribe(PublisherList pubList) {
 
 		Publisher[] publst = pubList.getPublishers();
@@ -46,18 +52,34 @@ public class SubMongo {
 		}
 	}
 
+	
 	static class MyPublisherListListener implements PublisherListListener {
-
+		/**
+		 * overrides publisherListUpdate method to receive updates from the 
+		 * server about the publisher list
+		 * 
+		 * @param pl
+		 * 
+		 */
 		@Override
 		public void publisherListUpdate(PublisherList pl) {
 			myPubList = new PublisherList(pl);
+			System.out.println("\tReceived message:");
+			myPubList.displayPublishers();
 			subscribe(myPubList);
 		}
 
 	}
 
 	static class MySubscriptionListener implements SubscriptionListener {
-
+		/**
+		 * overrides publishedMessage method to receive published messages
+		 * from the subscribed publishers 
+		 * 
+		 * 
+		 * @param topic, message
+		 * 
+		 */
 		@Override
 		public void publishedMessage(String topic, String message) {
 			System.out.println("\tReceived message:");

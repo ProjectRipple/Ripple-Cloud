@@ -24,15 +24,22 @@ public final class DBoperations {
 	}
 	return collection;
 	}
-	
+	/**
+	 * retrieves all data from the specified collection 
+	 * in connected db 
+	 * @param  collectionName, key, value
+	 * 
+	 * @return BasicDBObject
+	 * 
+	 */
 	public void  retrieveAll(String collectionName){
 		if(this.checkCollection(collectionName)){
 			
 		DBCollection col = db.getCollection(collectionName);
-	 	BasicDBObject query = new BasicDBObject();
-	 	query.put("level", "Warning");
+	 	//BasicDBObject query = new BasicDBObject();
+	 //	query.put("level", "Warning");
 	 	
-		DBCursor cursor = col.find(query);    
+		DBCursor cursor = col.find();    
         while (cursor.hasNext()) { 
          
            System.out.println(cursor.next()); 
@@ -41,6 +48,15 @@ public final class DBoperations {
 		}
 	}
 	
+	/**
+	 * retrieves data from the specified collection 
+	 * with specified key and value
+	 * in connected db 
+	 * @param  collectionName, key, value
+	 * 
+	 * @return BasicDBObject
+	 * 
+	 */
 	public BasicDBObject retrieveOne(String collectionName,String key,String value ){
 		
 		String collection=collectionName, field=key, fieldvalue=value;	
@@ -58,7 +74,14 @@ public final class DBoperations {
 		}
 	
 	}
-	
+	/**
+	 * checks for the existence of the mentioned Collection 
+	 * name in connected DB. 
+	 * @param colName
+	 * 
+	 * @return boolean
+	 * 
+	 */
 	private boolean checkCollection(String colName){
 		String collection=colName;
 		
