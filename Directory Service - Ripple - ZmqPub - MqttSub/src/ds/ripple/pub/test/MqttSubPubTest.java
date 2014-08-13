@@ -23,7 +23,7 @@ public class MqttSubPubTest {
 				mqttSubPub.startPub();
 				System.out.println("Press enter to stop...");
 				in.close();
-				mqttSubPub.stopPub();
+			//	mqttSubPub.stopPub();
 			//	in.close();
 			} catch (Exception e) {
 				e.printStackTrace();

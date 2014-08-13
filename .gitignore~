@@ -4,13 +4,16 @@
 bin/
 tmp/
 lib/
-libs/
 *.tmp
 *.bak
+# *.ucls
 *.swp
 *~.nib
 local.properties
 .loadpath
+
+# temp lock files created by mqtt
+MQTTsub*/
 
 # External tool builders
 .externalToolBuilders/
